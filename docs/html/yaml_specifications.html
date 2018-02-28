@@ -1,0 +1,174 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>YAML File Specifications &#8212; JupyterFleet 1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="JupyterFleet Documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="yaml-file-specifications">
+<h1>YAML File Specifications<a class="headerlink" href="#yaml-file-specifications" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial concerns the creation of a YAML file to be read by JupyterFleet.  This file will specify all the parameters used to interact with AWS, as well as optionally aid in debugging and instance monitoring.</p>
+<p>This tutorial will <em>not</em> address the creation of an AMI in any capacity, as JupyterFleet is designed to deploy an existing AMI.  If you are affiliated with Brown and need assistance in creating an AMI, please contact our help line.</p>
+<p><strong>What is a YAML file?</strong></p>
+<p>A YAML file is basically a configuration file that uses an indented, hierarchical structure to make it both human-readable and machine-readable in equal measure.  It allows all options for an entire piece of software to be specified in one place without having to type out a ten-line command on the command line that is difficult to read and annoying to edit.</p>
+<p>YAML files can be formatted in a number of ways; the exact specifications for the YAML file that JupyterFleet can read are outlined below.  A sample YAML file can be found at placeholder.</p>
+<p><strong>JupyterFleet YAML Format</strong></p>
+<div class="section" id="instance-creation">
+<h2>instance-creation<a class="headerlink" href="#instance-creation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="platform">
+<h3>platform<a class="headerlink" href="#platform" title="Permalink to this headline">¶</a></h3>
+<p>The ‘platform’ option is used to specify the platform JupyterFleet is being run from - not the platform of the AMI.  This information is used to configure logging in the event that you elect to enable logging, as platform determines the location of the crontab (system tool for running a task at a designated interval) configuration file.</p>
+</div>
+<div class="section" id="aws-credentials">
+<h3>aws-credentials<a class="headerlink" href="#aws-credentials" title="Permalink to this headline">¶</a></h3>
+<p><strong>generate-configuration</strong></p>
+<p>The ‘generate-configuration’ option is used to designate whether JupyterFleet should configure the AWS Command Line Interface (CLI).  The CLI must be configured to use JupyterFleet, but this option can be set to FALSE if you have already configured the tool yourself.  Importantly, the default region must be set to the region in which the instances are to be deployed (and the AMI must be in that region too).  The rest of the options under ‘aws-credentials’ will only be used if ‘generate-configuration’ is set to TRUE.</p>
+<p><strong>default-region</strong></p>
+<p>The ‘default-region’ option is used to specify the region to be used in deploying the instances.  The AMI to be used must be available in this region.</p>
+<p><strong>key-id</strong></p>
+<p>The ‘key-id’ option is used to specify your AWS key ID.</p>
+<p><strong>secrey-key</strong></p>
+<p>The ‘secret-key’ option is used to specify your AWS key ID.</p>
+</div>
+<div class="section" id="cli-parameters">
+<h3>cli-parameters<a class="headerlink" href="#cli-parameters" title="Permalink to this headline">¶</a></h3>
+<p><strong>ami-id</strong></p>
+<p>The ‘ami-id’ option is used to specify the AMI ID - <em>not</em> the AMI’s name.  This ID can be found on the ‘AMIs’ page linked in the left toolbar on the main EC2 page.</p>
+<p>[EC2 screenshot with the AMIs page highlighted]</p>
+<p>Within that page, the AMI ID corresponding to your AMI of choice can be found in the column bearing that name.</p>
+<p>[AMIs page with the AMI ID column highlighted]</p>
+<p><strong>instance-type</strong></p>
+<p>The ‘instance-type’ option is used to designate what type of EC2 instance to use.  A list of available instance types and their capabilities can be found on Amazon’s <a class="reference external" href="https://aws.amazon.com/ec2/instance-types/">EC2 page</a>.  We have found that the ‘t2.medium’ instance type affords the best balance of cost and performance for an interactive workshop (as jobs that require significant memory will take too long to be demonstrated in this format), though the choice will necessarily be dictated by use case.</p>
+<p>Please be mindful of the fact that each instance type is governed by its own instance limit, and be sure that the instance you’ve selected has a limit greater than or equal to the number of instances you plan to deploy.</p>
+<p><strong>instance-number</strong></p>
+<p>The ‘instance-number’ option is used to specify the number of instances - and thereby the number of notebooks - to instantiate.</p>
+<p><strong>security-group-id</strong></p>
+<p>The ‘security-group-id’ option is used to designate which security group to attach to the instances.  As in the case of ‘ami-id’, this option uses the security group’s ID, not its name.  The security group ID can be found on the ‘Security Groups’ page linked in the left toolbar on the main EC2 page.</p>
+<p>[EC2 screenshot with the Security Groups page highlighted]</p>
+<p>Within that page, the security group ID corresponding to your security group of choice can be found in the ‘Group ID’ column.</p>
+<p>[Security Groups page with the Group ID column highlighted]</p>
+<p><strong>keyfile</strong></p>
+<p><em>key-path</em></p>
+<p>The ‘key-path’ option is used to designate the location of the folder containing the .pem keyfile used to connect to AWS instances.  A keypair must first be created; this task can be performed by going into the ‘Keypairs’ page using the left toolbar on the main EC2 page and then selecting ‘Create Key Pair’.  More details about creating keypairs is beyond the scope of this tutorial and can be found in the AWS documentation.</p>
+<p>By convention, keyfiles are stored in the ‘.ssh’ hidden subdirectory of the user’s home directory i.e. ~/.ssh - this option should specify the directory’s path not including the name of the keyfile itself, which is specified immediately below.</p>
+<p><em>key-name</em></p>
+<p>The ‘key-name’ option is used to designate the name of the keyfile itself.</p>
+</div>
+</div>
+<div class="section" id="instance-configuration">
+<h2>instance-configuration<a class="headerlink" href="#instance-configuration" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+<div class="section" id="add-directory-information-here-once-it-is-implemented-and-make-this-less-huge">
+<h1>Add directory information here once it is implemented and make this less huge<a class="headerlink" href="#add-directory-information-here-once-it-is-implemented-and-make-this-less-huge" title="Permalink to this headline">¶</a></h1>
+<p>The ‘verbosity’ option is used to control whether or not the software outputs each IP before it connects to it to activate the Jupyter server.  It will probably do other things later as well.</p>
+<p><strong>cron-interval</strong></p>
+<p>The ‘cron-interval’ option is used to determine how frequently the instances will be checked and their screen statuses logged.  Setting this interval to 0 will disable logging entirely.</p>
+<p><strong>log-directory</strong></p>
+<p>The ‘log-directory’ option is used to designate where the log file will be written.  Setting the option ‘.’ will cause the logs to be placed in the current directory.</p>
+<p><strong>wait</strong></p>
+<p>The ‘wait’ option is used to force the software to wait for 120 seconds after activating Jupyter and then check the status of screens on that instance; this test is conducted on every instance.  If there is an error with the activation of the Jupyter server, the screen will almost certainly die during that interval, meaning that no screens will be visible when the query is executed.  If no screens are visible, there is likely a problem with the AMI that must be addressed (or a misspecification of the ‘conda-path’ option described below).  <em>This option is intended for small-scale testing purposes only, as it adds two minutes to the configuration of every instance, increasing the spin-up time by hours for a full-scale deployment.</em></p>
+<p>The ‘username’ option is used to specify the username of the root user on the AMI (the username you used to login to the instance you used to generate the AMI).  This value will depend entirely on the AMI you have created (e.g. any AMI built from the default Ubuntu base image will be ‘ubuntu’).</p>
+<p>The ‘conda-path’ option is used to specify the full filepath to the conda binary folder within the AMI.  If this path is misspecified, attempts to activate the Jupyter server will fail and the screen will die - you can monitor for this problem by enabling the ‘wait’ option under ‘logging’ as described above.</p>
+<p>The ‘port’ option is used to specify which port the Jupyter server is exposed on (as specified in the Jupyter configuration file on the AMI).  This option is used to generate the list of instance links and the user directory and does not ameliorate a misconfigured security group (i.e. even if ‘port’ is listed correctly, Jupyter will be inaccessible if the wrong security group is applied to the instances).  Likewise, if the security group is correct but ‘port’ is wrong, Jupyter itself will work fine but the directory will be populated by dead links.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">JupyterFleet</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">YAML File Specifications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#instance-creation">instance-creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#instance-configuration">instance-configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#add-directory-information-here-once-it-is-implemented-and-make-this-less-huge">Add directory information here once it is implemented and make this less huge</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">JupyterFleet Documentation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Andrew Leith.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/yaml_specifications.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

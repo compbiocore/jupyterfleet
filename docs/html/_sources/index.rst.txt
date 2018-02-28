@@ -1,0 +1,26 @@
+.. cbc-workshops documentation master file, created by
+   sphinx-quickstart on Tue Feb  6 15:03:56 2018.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+JupyterFleet Documentation
+==========================
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   yaml_specifications
+
+
+	
+Purpose
+=======
+
+This site serves to describe the 'JupyterFleet' software being developed by the Brown Computational Biology Core for the purpose of quick and easy Jupyter deployment on AWS.  The software is under active development so some features are missing and bugs are to be expected at this stage - **it should not be run in its current form without consulting Andrew Leith** (see contact information below).  JupyterFleet receives instructions from a YAML file and proceeds to instantiate AWS instances and deploy Jupyter notebooks on them with a single command.
+
+
+Contact
+=======
+
+For assistance, contact cbc-help@brown.edu - this is our general help line, so please specify that your issue is with this site's contents
