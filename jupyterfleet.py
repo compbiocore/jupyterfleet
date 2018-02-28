@@ -6,7 +6,7 @@ import time
 
 parser = argparse.ArgumentParser(description='Process YAML file containing options.')
 parser.add_argument('-y', '--yaml', type=str, required = True)
-parser.add_argument('-i', '--ip', type=str, required = True)
+#parser.add_argument('-i', '--ip', type=str, required = True)
 # This argument is just for testing - the full program will generate it internally
 
 arguments = parser.parse_args()
@@ -49,7 +49,7 @@ subprocess.call(['tr "\t" "\n" < ips.txt > ips_newline.txt'], shell=True)
 keyLocation = yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-path"] + '/' + yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-name"] + ".pem"
 # store the full filepath of the keyfile for convenience due to length of expression
 
-ipFile = open(arguments.ip,'r')
+ipFile = open("ips_newline.txt",'r')
 for ip in ipFile:
 	ip = ip.strip('\n')
 	# must strip() the trailing newlines to correctly execute the batch command
@@ -59,11 +59,34 @@ for ip in ipFile:
 	bashCommand = 'ssh -oStrictHostKeyChecking=no -i ' + keyLocation + ' ' + yamlPar["instance-creation"]["instance-configuration"]["username"] + '@' + ip + ' "screen -dm bash -c \''+ yamlPar["instance-creation"]["instance-configuration"]["conda-path"] +'/jupyter notebook\'"'
 	# assemble the command to access each IP and activate Jupyter in a detached screen
 	subprocess.call([bashCommand], shell=True)
+	if yamlPar["instance-creation"]["instance-configuration"]["logging"]["wait"] == True:
+		print("Waiting 120 seconds to be sure the screen will persist...")
+		time.sleep(120)
+		bashCommand = 'ssh -oStrictHostKeyChecking=no -i ' + keyLocation + ' ' + yamlPar["instance-creation"]["instance-configuration"]["username"] + '@' + ip + ' "screen -ls"'
+		subprocess.call([bashCommand], shell=True)
 
 
-awkCommand = 'awk \'$0=$0":' + str(yamlPar["instance-creation"]["instance-configuration"]["port"]) + '"\' ' + arguments.ip + ' > ips_newline_port.txt'
+############## Set up logging
+if yamlPar["instance-creation"]["instance-configuration"]["logging"]["cron-interval"] > 0:
+	subprocess.call(['echo "#!/bin/bash" > screen_check.sh'], shell=True)
+	subprocess.call(['echo "for IP_ADDRESS in \`cat ips_newline.txt\` ; do" >> screen_check.sh'], shell=True)
+	bashCommand = 'echo \"' + yamlPar["instance-creation"]["instance-configuration"]["username"] + '@\${IP_ADDRESS}\"'
+	subprocess.call(['echo ' + bashCommand + ' >> screen_check.sh'], shell=True)
+	bashCommand = 'ssh -oStrictHostKeyChecking=no -i ' + keyLocation + ' ' + yamlPar["instance-creation"]["instance-configuration"]["username"] + '@\${IP_ADDRESS} \"screen -ls\"'
+	subprocess.call(['echo ' + bashCommand + ' >> screen_check.sh'], shell=True)
+	subprocess.call(['echo "done" >> screen_check.sh'], shell=True)
+	subprocess.call(['echo "*/10 * * * * bash `pwd`/screen_check.sh >> ' + yamlPar["instance-creation"]["instance-configuration"]["logging"]["log-directory"] + '/cron_screen_log.txt 2>&1" > fake_crontab.txt'], shell=True)
+	
+
+
+awkCommand = 'awk \'$0=$0":' + str(yamlPar["instance-creation"]["instance-configuration"]["port"]) + '"\' ' + "ips_newline.txt" + ' > ips_newline_port.txt'
 # assemble the command to append the Jupyter port to the IPs
 subprocess.call([awkCommand], shell=True)
 
-subprocess.call(['rm ips.txt ips_newline.txt'], shell=True)
+subprocess.call(['rm ips.txt'], shell=True)
 # remove intermediary files
+
+#subprocess.call(['bash generate_directory.sh > user_directory.html'], shell=True)
+# call the script that builds the html directory
+
+
