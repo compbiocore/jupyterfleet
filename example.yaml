@@ -1,0 +1,28 @@
+instance-creation:
+    platform                 : (user's local platform, used for determining filepaths for things like crontab)
+    aws-credentials:
+        generate-configuration      : TRUE
+        default-region              : us-east-2
+        key-id                      : [REDACTED]
+        secret-key                  : [REDACTED]
+    cli-parameters:
+        ami-id               : ami-64a49001
+        instance-type        : t2.micro
+        instance-number      : 3
+        security-group-id    : [REDACTED]
+        keyfile:
+            key-path        : /users/aleith/.ssh
+            key-name        : aleith-workshop
+    instance-configuration:
+        directory-parameters:
+            generate-directory  : TRUE
+            user-list           : registration_tiny.csv
+            directory-type      : (controls what information is used in directory generation)
+        verbosity                : FALSE
+        logging:
+           cron-interval         : 10
+           log-directory         : .
+           wait                  : TRUE
+        username                 : ubuntu
+        conda-path               : /home/ubuntu/miniconda/bin
+        jupyter-port             : 15500
