@@ -109,7 +109,7 @@ logging
 
 **cron-interval**
 
-The 'cron-interval' option is used to determine how frequently the instances will be checked and their screen statuses logged.  Setting this interval to 0 will disable logging entirely.
+The 'cron-interval' option is used to determine how frequently, in minutes, the instances will be checked and their screen statuses logged.  Setting this interval to 0 will disable logging entirely.
 
 **log-directory**
 
@@ -129,7 +129,7 @@ conda-path
 
 The 'conda-path' option is used to specify the full filepath to the conda binary folder within the AMI.  If this path is misspecified, attempts to activate the Jupyter server will fail and the screen will die - you can monitor for this problem by enabling the 'wait' option under 'logging' as described above.
 
-port
+jupyter-port
 ....
 
-The 'port' option is used to specify which port the Jupyter server is exposed on (as specified in the Jupyter configuration file on the AMI).  This option is used to generate the list of instance links and the user directory and does not ameliorate a misconfigured security group (i.e. even if 'port' is listed correctly, Jupyter will be inaccessible if the wrong security group is applied to the instances).  Likewise, if the security group is correct but 'port' is wrong, Jupyter itself will work fine but the directory will be populated by dead links.
+The 'jupyter-port' option is used to specify which port the Jupyter server is exposed on (as specified in the Jupyter configuration file on the AMI).  This option is used to generate the list of instance links and the user directory and does not ameliorate a misconfigured security group (i.e. even if 'jupyter-port' is listed correctly, Jupyter will be inaccessible if the wrong security group is applied to the instances).  Likewise, if the security group is correct but 'jupyter-port' is wrong, Jupyter itself will work fine but the directory will be populated by dead links.
