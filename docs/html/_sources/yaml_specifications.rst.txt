@@ -13,7 +13,7 @@ This tutorial will *not* address the creation of an AMI in any capacity, as Jupy
 
 A YAML file is basically a configuration file that uses an indented, hierarchical structure to make it both human-readable and machine-readable in equal measure.  It allows all options for an entire piece of software to be specified in one place without having to type out a ten-line command on the command line that is difficult to read and annoying to edit.
 
-YAML files can be formatted in a number of ways; the exact specifications for the YAML file that JupyterFleet can read are outlined below.  A sample YAML file can be found at placeholder.
+YAML files can be formatted in a number of ways; the exact specifications for the YAML file that JupyterFleet can read are outlined below.  A sample YAML file can be found `here <https://raw.githubusercontent.com/compbiocore/jupyterfleet/master/example.yaml>`_ (with credentials redacted).  The entries that are feature descriptions in parentheses instead of values are not yet implemented so leaving them as is will not break anything.
 
 
 instance-creation
@@ -24,7 +24,7 @@ instance-creation
 platform
 ~~~~~~~~
 
-The 'platform' option is used to specify the platform JupyterFleet is being run from - not the platform of the AMI.  This information is used to configure logging in the event that you elect to enable logging, as platform determines the location of the crontab (system tool for running a task at a designated interval) configuration file.
+The 'platform' option will be used to specify the platform JupyterFleet is being run from - not the platform of the AMI.  This information will be used to configure logging in the event that you elect to enable logging, as platform determines the location of the crontab (system tool for running a task at a designated interval) configuration file.  This option is not yet implemented.
 
 
 
@@ -98,8 +98,21 @@ The 'key-name' option is used to designate the name of the keyfile itself.
 instance-configuration
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Add directory information here once it is implemented and make this less huge
-=============================================================================
+**directory-parameters**
+
+SOME OPTIONS NOT YET IMPLEMENTED
+
+*generate-directory*
+
+The 'generate-directory' option is used to control whether or not a directory should be generated.  The directory is (for the moment exclusively) an html file that associates each registrant's name with an IP address in the form of a clickcable link (with the port appended, such that clicking the link opens the Jupyter landing screen).
+
+*user-list*
+
+The 'user-list' option is used to input a list of the users that will attend the workshop.  This option is currently implemented in an overly-specific manner (names must be the third column of a CSV and there must be a header, as this is the format of the one real dataset available to the developer) and should not be used.  Eventually, this option will require a list of names, each on its own line, with no header.
+
+*directory-type*
+
+The 'directory-type' option will be used to allow control over the nature of the directory.  This option is not currently used - at the moment, the only directory type that can be generated is the default type consisting of an html file where the first column is the IP link and the second column is the user's name.
 
 **verbosity**
 
