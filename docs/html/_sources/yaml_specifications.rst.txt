@@ -1,6 +1,9 @@
 YAML File Specifications
 ========================
 
+Introduction to the YAML format
+-------------------------------
+
 This tutorial concerns the creation of a YAML file to be read by JupyterFleet.  This file will specify all the parameters used to interact with AWS, as well as optionally aid in debugging and instance monitoring.
 
 This tutorial will *not* address the creation of an AMI in any capacity, as JupyterFleet is designed to deploy an existing AMI.  If you are affiliated with Brown and need assistance in creating an AMI, please contact our help line.
@@ -12,7 +15,6 @@ A YAML file is basically a configuration file that uses an indented, hierarchica
 
 YAML files can be formatted in a number of ways; the exact specifications for the YAML file that JupyterFleet can read are outlined below.  A sample YAML file can be found at placeholder.
 
-**JupyterFleet YAML Format**
 
 instance-creation
 -----------------
