@@ -1,29 +1,55 @@
+#!/usr/bin/env python
+
 import argparse
 import os
 import subprocess
 import yaml
 import time
+import sys
 
-parser = argparse.ArgumentParser(description='Process YAML file containing options.')
-parser.add_argument('-y', '--yaml', type=str, required = True)
+parser = argparse.ArgumentParser(description='Uses a YAML file to deploy a designated number of Jupyter instances on AWS according to user specifications.  Please visit http://placeholder for a thorough explanation of the YAML file\'s format.')
+parser.add_argument('-y', '--yaml', type=str, required = True, help = 'The YAML configuraton file')
 #parser.add_argument('-i', '--ip', type=str, required = True)
 # This argument is just for testing - the full program will generate it internally
 
 arguments = parser.parse_args()
 
-subprocess.call(['echo "hello world with bash"'], shell=True)
-
-print "Our file is %s." % arguments.yaml
-
 ################ Check dependencies
 
+missingAWS = subprocess.call(['which aws'], shell=True)
+# this will resolve to 0 if the AWS CLI is installed
+if missingAWS == True:
+	sys.exit("\033[1m" + "Error: The AWS Command Line Interface is not installed or not in your PATH.  Please refer to the AWS documentation for the installation instructions for your system." + "\033[0m")
 
-
-
+# TODO: ADD MANUAL CONFIRMATION ASKING WHETHER OR NOT TO PROCEED IF NUMBER OF REGISTRANTS IS GREATER THAN THE NUMBER OF INSTANCES
 
 ################ Begin parsing of YAML
 
 yamlPar = yaml.load(open(arguments.yaml))
+
+
+################ Configure AWS CLI (optional step)
+
+if yamlPar["instance-creation"]["aws-credentials"]["generate-configuration"] == True:
+	subprocess.call(['echo "[default]" > ~/.aws/testconfig'], shell=True)
+	textCommand = 'echo "region = ' + yamlPar["instance-creation"]["aws-credentials"]["default-region"] + ' " >> ~/.aws/testconfig'
+	subprocess.call([textCommand], shell=True)
+	# write the two-line 'config' file setting the default region to be used throughout
+
+	subprocess.call(['echo "[default]" > ~/.aws/testcredentials'], shell=True)
+	textCommand = 'echo "aws_access_key_id = ' + yamlPar["instance-creation"]["aws-credentials"]["key-id"] + ' " >> ~/.aws/testcredentials'
+	subprocess.call([textCommand], shell=True)
+	textCommand = 'echo "aws_access_key_id = ' + yamlPar["instance-creation"]["aws-credentials"]["secret-key"] + ' " >> ~/.aws/testcredentials'
+	subprocess.call([textCommand], shell=True)
+	# write the three-line 'credentials' file setting the default key id and associated secret key (see walkthough for more information)
+
+missingConf = subprocess.call(['aws configure get aws_access_key_id'], shell=True)
+# this will resolve to 0 if there is a key in the configuration file
+if missingConf == True:
+	sys.exit("\033[1m" + "AWS CLI is not configured.  Please ensure the YAML file includes your AWS credentials." + "\033[0m")
+# be sure that the CLI is configured, either through the above block or through previous settings
+
+
 
 
 instanceCreate = 'aws ec2 run-instances --image-id ' + yamlPar["instance-creation"]["cli-parameters"]["ami-id"] + ' --count ' + str(yamlPar["instance-creation"]["cli-parameters"]["instance-number"]) + ' --instance-type ' + yamlPar["instance-creation"]["cli-parameters"]["instance-type"] + ' --key-name ' + yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-name"] + ' --security-group-ids ' + yamlPar["instance-creation"]["cli-parameters"]["security-group-id"]
@@ -49,8 +75,16 @@ subprocess.call(['tr "\t" "\n" < ips.txt > ips_newline.txt'], shell=True)
 keyLocation = yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-path"] + '/' + yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-name"] + ".pem"
 # store the full filepath of the keyfile for convenience due to length of expression
 
+print("Making sure the keyfile's permissions are correctly set...")
+subprocess.call(['chmod 400 ' + keyLocation], shell=True)
+# keyfile must have these exact permissions or the connection will be declined
+print("Done.")
+
+
+
 ipFile = open("ips_newline.txt",'r')
 for ip in ipFile:
+# loop over the IP file and perform steps on each IP
 	ip = ip.strip('\n')
 	# must strip() the trailing newlines to correctly execute the batch command
 	if yamlPar["instance-creation"]["instance-configuration"]["verbosity"] == True:
@@ -62,12 +96,15 @@ for ip in ipFile:
 	if yamlPar["instance-creation"]["instance-configuration"]["logging"]["wait"] == True:
 		print("Waiting 120 seconds to be sure the screen will persist...")
 		time.sleep(120)
+		# wait 2 minutes to be sure the screen stays active - this setting is meant for testing and not production deployment due to how much time it takes
 		bashCommand = 'ssh -oStrictHostKeyChecking=no -i ' + keyLocation + ' ' + yamlPar["instance-creation"]["instance-configuration"]["username"] + '@' + ip + ' "screen -ls"'
 		subprocess.call([bashCommand], shell=True)
+		# list running screens 
 
 
 ############## Set up logging
 if yamlPar["instance-creation"]["instance-configuration"]["logging"]["cron-interval"] > 0:
+# setting the interval to 0 will disable logging
 	subprocess.call(['echo "#!/bin/bash" > screen_check.sh'], shell=True)
 	subprocess.call(['echo "for IP_ADDRESS in \`cat ips_newline.txt\` ; do" >> screen_check.sh'], shell=True)
 	bashCommand = 'echo \"' + yamlPar["instance-creation"]["instance-configuration"]["username"] + '@\${IP_ADDRESS}\"'
@@ -75,18 +112,24 @@ if yamlPar["instance-creation"]["instance-configuration"]["logging"]["cron-inter
 	bashCommand = 'ssh -oStrictHostKeyChecking=no -i ' + keyLocation + ' ' + yamlPar["instance-creation"]["instance-configuration"]["username"] + '@\${IP_ADDRESS} \"screen -ls\"'
 	subprocess.call(['echo ' + bashCommand + ' >> screen_check.sh'], shell=True)
 	subprocess.call(['echo "done" >> screen_check.sh'], shell=True)
-	subprocess.call(['echo "*/10 * * * * bash `pwd`/screen_check.sh >> ' + yamlPar["instance-creation"]["instance-configuration"]["logging"]["log-directory"] + '/cron_screen_log.txt 2>&1" > fake_crontab.txt'], shell=True)
-	
+	# use the YAML parameters to write a bash script that logs into each IP and lists the active screens
+	subprocess.call(['echo "*/' + str(yamlPar["instance-creation"]["instance-configuration"]["logging"]["cron-interval"]) + ' * * * * bash `pwd`/screen_check.sh >> ' + yamlPar["instance-creation"]["instance-configuration"]["logging"]["log-directory"] + '/cron_screen_log.txt 2>&1" > fake_crontab.txt'], shell=True)
+	# set up a cron job to run the script at the desired interval (TODO: fix this to base its location on the system - need to figure out where mac crontab goes first)
 
 
-awkCommand = 'awk \'$0=$0":' + str(yamlPar["instance-creation"]["instance-configuration"]["port"]) + '"\' ' + "ips_newline.txt" + ' > ips_newline_port.txt'
+awkCommand = 'awk \'$0=$0":' + str(yamlPar["instance-creation"]["instance-configuration"]["jupyter-port"]) + '"\' ' + "ips_newline.txt" + ' > ips_newline_port.txt'
 # assemble the command to append the Jupyter port to the IPs
 subprocess.call([awkCommand], shell=True)
 
 subprocess.call(['rm ips.txt'], shell=True)
 # remove intermediary files
 
-#subprocess.call(['bash generate_directory.sh > user_directory.html'], shell=True)
+if yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["generate-directory"] == True:
+	num_lines = sum(1 for line in open(yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["user-list"]))
+	if num_lines > yamlPar["instance-creation"]["cli-parameters"]["instance-number"]:
+			sys.exit("\033[1m" + "Warning: Insufficient instances for all participants.  Exiting without generating directory." + "\033[0m")
+	
+	subprocess.call(['bash generate_directory.sh > user_directory.html'], shell=True)
 # call the script that builds the html directory
 
 
