@@ -9,6 +9,7 @@ import sys
 
 parser = argparse.ArgumentParser(description='Uses a YAML file to deploy a designated number of Jupyter instances on AWS according to user specifications.  Please visit http://placeholder for a thorough explanation of the YAML file\'s format.')
 parser.add_argument('-y', '--yaml', type=str, required = True, help = 'The YAML configuraton file')
+parser.add_argument('--kill', help = 'Deactivates all resources', action="store_true")
 #parser.add_argument('-i', '--ip', type=str, required = True)
 # This argument is just for testing - the full program will generate it internally
 
@@ -16,7 +17,7 @@ arguments = parser.parse_args()
 
 ################ Check dependencies
 
-missingAWS = subprocess.call(['which aws'], shell=True)
+missingAWS = subprocess.call(['which aws'], shell=True, stdout=subprocess.PIPE)
 # this will resolve to 0 if the AWS CLI is installed
 if missingAWS == True:
 	sys.exit("\033[1m" + "Error: The AWS Command Line Interface is not installed or not in your PATH.  Please refer to the AWS documentation for the installation instructions for your system." + "\033[0m")
@@ -43,20 +44,29 @@ if yamlPar["instance-creation"]["aws-credentials"]["generate-configuration"] == 
 	subprocess.call([textCommand], shell=True)
 	# write the three-line 'credentials' file setting the default key id and associated secret key (see walkthough for more information)
 
-missingConf = subprocess.call(['aws configure get aws_access_key_id'], shell=True)
+missingConf = subprocess.call(['aws configure get aws_access_key_id'], shell=True, stdout=subprocess.PIPE)
 # this will resolve to 0 if there is a key in the configuration file
 if missingConf == True:
 	sys.exit("\033[1m" + "AWS CLI is not configured.  Please ensure the YAML file includes your AWS credentials." + "\033[0m")
 # be sure that the CLI is configured, either through the above block or through previous settings
 
 
+################## KILL RESOURCES IF TOLD TO DO SO (must wait for CLI to be configured first just in case a new computer is being used)
+if arguments.kill:
+	print "All instances in the region specified in the YAML file will now be deactivated.  Execution will pause for 30 seconds to give you a chance to cancel if that is not desired."
+	time.sleep(30)
+	subprocess.call(['aws ec2 describe-instances | grep InstanceId | awk \'{print $2}\' | awk -F\'\"\' \'{ print $2 }\' | xargs aws ec2 terminate-instances --instance-ids'], shell=True, stdout=subprocess.PIPE)
+	sys.exit("Resources are now being deactivated.  Execution will now terminate.  Spin-down status can be monitored from the console and will take approximately one minute.")
+
+
+
 
 
 instanceCreate = 'aws ec2 run-instances --image-id ' + yamlPar["instance-creation"]["cli-parameters"]["ami-id"] + ' --count ' + str(yamlPar["instance-creation"]["cli-parameters"]["instance-number"]) + ' --instance-type ' + yamlPar["instance-creation"]["cli-parameters"]["instance-type"] + ' --key-name ' + yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-name"] + ' --security-group-ids ' + yamlPar["instance-creation"]["cli-parameters"]["security-group-id"]
 # generate the command to instantiate the instances in accordance with YAML specifications
-subprocess.call([instanceCreate], shell=True)
+subprocess.call([instanceCreate], shell=True, stdout=subprocess.PIPE)
 
-
+print "Instances have been successfully requested and are presently instantiating."
 print "Execution will now pause for 3 minutes to be sure all instances are active."
 print "Their status can be viewed in the web console at this point."
 time.sleep(180)
@@ -90,8 +100,9 @@ for ip in ipFile:
 	if yamlPar["instance-creation"]["instance-configuration"]["verbosity"] == True:
 		print(ip)
 		# if verbose, print the IP so user can track the process
-	bashCommand = 'ssh -oStrictHostKeyChecking=no -i ' + keyLocation + ' ' + yamlPar["instance-creation"]["instance-configuration"]["username"] + '@' + ip + ' "screen -dm bash -c \''+ yamlPar["instance-creation"]["instance-configuration"]["conda-path"] +'/jupyter notebook\'"'
+	bashCommand = 'ssh -oStrictHostKeyChecking=no -o \"UserKnownHostsFile /dev/null\" -i ' + keyLocation + ' ' + yamlPar["instance-creation"]["instance-configuration"]["username"] + '@' + ip + ' "screen -dm bash -c \''+ yamlPar["instance-creation"]["instance-configuration"]["conda-path"] +'/jupyter notebook\'"'
 	# assemble the command to access each IP and activate Jupyter in a detached screen
+	# do not add to UserKnownHostsFile because eventually an IP will be reused and your computer will erroneously flag it as a man-in-the-middle attack
 	subprocess.call([bashCommand], shell=True)
 	if yamlPar["instance-creation"]["instance-configuration"]["logging"]["wait"] == True:
 		print("Waiting 120 seconds to be sure the screen will persist...")
