@@ -7,10 +7,14 @@ JupyterFleet Documentation
 ==========================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
+   manual
+
    yaml_specifications
+
+   changelog
 
 
 	

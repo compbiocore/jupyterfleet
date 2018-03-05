@@ -1,0 +1,7 @@
+Changelog
+=========
+
+Verson 1.1
+
+Added --kill argument to deactivate resources
+Suppressed superfluous output from various commands
