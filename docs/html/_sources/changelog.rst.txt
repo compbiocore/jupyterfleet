@@ -3,5 +3,10 @@ Changelog
 
 Verson 1.1
 
+Added changelog
+
 Added --kill argument to deactivate resources
+
 Suppressed superfluous output from various commands
+
+Added manual page
