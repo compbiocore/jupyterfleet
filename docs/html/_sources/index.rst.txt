@@ -23,6 +23,12 @@ Purpose
 
 This site serves to describe the 'JupyterFleet' software being developed by the Brown Computational Biology Core for the purpose of quick and easy Jupyter deployment on AWS.  The software is under active development so some features are missing and bugs are to be expected at this stage - **it should not be run in its current form without consulting Andrew Leith** (see contact information below).  JupyterFleet receives instructions from a YAML file and proceeds to instantiate AWS instances and deploy Jupyter notebooks on them with a single command.
 
+The software (in its provisional state) can be found at the following repository:
+
+https://github.com/compbiocore/jupyterfleet
+
+Pip and Conda installations will be available pending a production build.
+
 
 Contact
 =======
