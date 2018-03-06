@@ -24,7 +24,7 @@ instance-creation
 platform
 ~~~~~~~~
 
-The 'platform' option will be used to specify the platform JupyterFleet is being run from - not the platform of the AMI.  This information will be used to configure logging in the event that you elect to enable logging, as platform determines the location of the crontab (system tool for running a task at a designated interval) configuration file.  This option is not yet implemented.
+The 'platform' option is used to specify the platform JupyterFleet itself is being run from - not the platform of the AMI.  This information is used to ensure the keyfile's permissions are correct and in a future build will also be used to configure logging in the event that you elect to enable logging, as platform determines the location of the crontab (system tool for running a task at a designated interval) configuration file.  Supported options are 'osx' for Mac OSX and 'linux' for Linux distributions.
 
 
 

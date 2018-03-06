@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Version 1.3
+~~~~~~~~~~~
+
+Added a more robust key permission check with platform-specificity and a custom error message
+
 Version 1.2
 ~~~~~~~~~~~
 

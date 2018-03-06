@@ -23,7 +23,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="JupyterFleet Documentation" href="index.html" />
+    <link rel="next" title="Changelog" href="changelog.html" />
+    <link rel="prev" title="Jupyterfleet Manual" href="manual.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -53,7 +54,7 @@
 <h2>instance-creation<a class="headerlink" href="#instance-creation" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="platform">
 <h3>platform<a class="headerlink" href="#platform" title="Permalink to this headline">¶</a></h3>
-<p>The ‘platform’ option will be used to specify the platform JupyterFleet is being run from - not the platform of the AMI.  This information will be used to configure logging in the event that you elect to enable logging, as platform determines the location of the crontab (system tool for running a task at a designated interval) configuration file.  This option is not yet implemented.</p>
+<p>The ‘platform’ option is used to specify the platform JupyterFleet itself is being run from - not the platform of the AMI.  This information is used to ensure the keyfile’s permissions are correct and in a future build will also be used to configure logging in the event that you elect to enable logging, as platform determines the location of the crontab (system tool for running a task at a designated interval) configuration file.  Supported options are ‘osx’ for Mac OSX and ‘linux’ for Linux distributions.</p>
 </div>
 <div class="section" id="aws-credentials">
 <h3>aws-credentials<a class="headerlink" href="#aws-credentials" title="Permalink to this headline">¶</a></h3>
@@ -137,18 +138,17 @@
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">YAML File Specifications</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#introduction-to-the-yaml-format">Introduction to the YAML format</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#instance-creation">instance-creation</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="manual.html">Jupyterfleet Manual</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">YAML File Specifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">JupyterFleet Documentation</a></li>
+      <li>Previous: <a href="manual.html" title="previous chapter">Jupyterfleet Manual</a></li>
+      <li>Next: <a href="changelog.html" title="next chapter">Changelog</a></li>
   </ul></li>
 </ul>
 </div>
