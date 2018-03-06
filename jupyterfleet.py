@@ -85,7 +85,10 @@ keyLocation = yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-pat
 # store the full filepath of the keyfile for convenience due to length of expression
 
 print("Making sure the keyfile's permissions are correctly set...")
-keyPermissions = subprocess.check_output(['stat -f \'%A %a %N\' ' + keyLocation], shell=True)
+if yamlPar["instance-creation"]["platform"] == "osx":
+	keyPermissions = subprocess.check_output(['stat -f \'%A %a %N\' ' + keyLocation], shell=True)
+elif yamlPar["instance-creation"]["platform"] == "linux":
+	keyPermissions = subprocess.check_output(['stat -c \'%a %n\' ' + keyLocation], shell=True)
 # check permissions of the keyfile
 if int(keyPermissions[:3]) != 400:
 # keyfile must have these exact permissions or the connection will be declined by AWS
