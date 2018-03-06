@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Version 1.2
+~~~~~~~~~~~
+
+Fixed critical bug with AWS CLI configuration file generation
+
 Verson 1.1
 ~~~~~~~~~~
 

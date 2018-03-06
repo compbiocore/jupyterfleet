@@ -10,8 +10,7 @@ import sys
 parser = argparse.ArgumentParser(description='Uses a YAML file to deploy a designated number of Jupyter instances on AWS according to user specifications.  Please visit http://placeholder for a thorough explanation of the YAML file\'s format.')
 parser.add_argument('-y', '--yaml', type=str, required = True, help = 'The YAML configuraton file')
 parser.add_argument('--kill', help = 'Deactivates all resources', action="store_true")
-#parser.add_argument('-i', '--ip', type=str, required = True)
-# This argument is just for testing - the full program will generate it internally
+
 
 arguments = parser.parse_args()
 
@@ -40,7 +39,7 @@ if yamlPar["instance-creation"]["aws-credentials"]["generate-configuration"] == 
 	subprocess.call(['echo "[default]" > ~/.aws/testcredentials'], shell=True)
 	textCommand = 'echo "aws_access_key_id = ' + yamlPar["instance-creation"]["aws-credentials"]["key-id"] + ' " >> ~/.aws/testcredentials'
 	subprocess.call([textCommand], shell=True)
-	textCommand = 'echo "aws_access_key_id = ' + yamlPar["instance-creation"]["aws-credentials"]["secret-key"] + ' " >> ~/.aws/testcredentials'
+	textCommand = 'echo "aws_secret_access_key = ' + yamlPar["instance-creation"]["aws-credentials"]["secret-key"] + ' " >> ~/.aws/testcredentials'
 	subprocess.call([textCommand], shell=True)
 	# write the three-line 'credentials' file setting the default key id and associated secret key (see walkthough for more information)
 
@@ -88,6 +87,7 @@ keyLocation = yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-pat
 print("Making sure the keyfile's permissions are correctly set...")
 subprocess.call(['chmod 400 ' + keyLocation], shell=True)
 # keyfile must have these exact permissions or the connection will be declined
+### TODO: VERIFY THAT THE PERMISSIONS WERE ACTUALLY CHANGED, AND BREAK IF NOT
 print("Done.")
 
 
