@@ -85,9 +85,21 @@ keyLocation = yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-pat
 # store the full filepath of the keyfile for convenience due to length of expression
 
 print("Making sure the keyfile's permissions are correctly set...")
-subprocess.call(['chmod 400 ' + keyLocation], shell=True)
-# keyfile must have these exact permissions or the connection will be declined
-### TODO: VERIFY THAT THE PERMISSIONS WERE ACTUALLY CHANGED, AND BREAK IF NOT
+keyPermissions = subprocess.check_output(['stat -f \'%A %a %N\' ' + keyLocation], shell=True)
+# check permissions of the keyfile
+if int(keyPermissions[:3]) != 400:
+# keyfile must have these exact permissions or the connection will be declined by AWS
+	subprocess.call(['chmod 400 ' + keyLocation], shell=True)
+	print("Attempting to change permissions to read-only...")
+	if yamlPar["instance-creation"]["platform"] == "osx":
+		keyPermissions = subprocess.check_output(['stat -f \'%A %a %N\' ' + keyLocation], shell=True)
+	elif yamlPar["instance-creation"]["platform"] == "linux":
+		keyPermissions = subprocess.check_output(['stat -c \'%a %n\' ' + keyLocation], shell=True)
+	# check again to see if update was successful with syntax based on platform
+	if int(keyPermissions[:3]) != 400:
+		sys.exit("Error: Key permissions incorrect even after an attempt to modify them, likely due to inadequate user access level.  Unable to proceed.  Please contact your system administrator for assistance.")
+else:
+	print("Permissions are already correct - proceeding.")
 print("Done.")
 
 
