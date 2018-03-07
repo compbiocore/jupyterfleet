@@ -1,6 +1,19 @@
 Changelog
 =========
 
+Upcoming Features
+-----------------
+
+An option to create a cron job that will automatically kill all instances after X hours to avoid accidental overbilling
+
+Directory generation
+
+Refactored code that will facilitate forking to introduce other cloud infrastructures besides AWS
+
+More informative errors as beta testing reveals issues
+
+
+
 Beta Build
 ----------
 
