@@ -14,6 +14,10 @@ parser.add_argument('--kill', help = 'Deactivates all resources', action="store_
 
 arguments = parser.parse_args()
 
+################ Begin parsing of YAML
+
+yamlPar = yaml.load(open(arguments.yaml))
+
 ################ Check dependencies
 
 missingAWS = subprocess.call(['which aws'], shell=True, stdout=subprocess.PIPE)
@@ -23,9 +27,7 @@ if missingAWS == True:
 
 # TODO: ADD MANUAL CONFIRMATION ASKING WHETHER OR NOT TO PROCEED IF NUMBER OF REGISTRANTS IS GREATER THAN THE NUMBER OF INSTANCES
 
-################ Begin parsing of YAML
 
-yamlPar = yaml.load(open(arguments.yaml))
 
 
 ################ Configure AWS CLI (optional step)
@@ -103,10 +105,10 @@ if int(keyPermissions[:3]) != 400:
 		sys.exit("Error: Key permissions incorrect even after an attempt to modify them, likely due to inadequate user access level.  Unable to proceed.  Please contact your system administrator for assistance.")
 else:
 	print("Permissions are already correct - proceeding.")
-print("Done.")
+print("Done verifying permissions.")
 
 
-
+print("Deploying Jupyter...")
 ipFile = open("ips_newline.txt",'r')
 for ip in ipFile:
 # loop over the IP file and perform steps on each IP
@@ -126,7 +128,8 @@ for ip in ipFile:
 		bashCommand = 'ssh -oStrictHostKeyChecking=no -i ' + keyLocation + ' ' + yamlPar["instance-creation"]["instance-configuration"]["username"] + '@' + ip + ' "screen -ls"'
 		subprocess.call([bashCommand], shell=True)
 		# list running screens 
-
+time.sleep(15)
+print("Jupyter should now be active on all instances.  It is recommended to spot-check a few to validate this fact.")
 
 ############## Set up logging
 if yamlPar["instance-creation"]["instance-configuration"]["logging"]["cron-interval"] > 0:
@@ -139,7 +142,18 @@ if yamlPar["instance-creation"]["instance-configuration"]["logging"]["cron-inter
 	subprocess.call(['echo ' + bashCommand + ' >> screen_check.sh'], shell=True)
 	subprocess.call(['echo "done" >> screen_check.sh'], shell=True)
 	# use the YAML parameters to write a bash script that logs into each IP and lists the active screens
-	subprocess.call(['echo "*/' + str(yamlPar["instance-creation"]["instance-configuration"]["logging"]["cron-interval"]) + ' * * * * bash `pwd`/screen_check.sh >> ' + yamlPar["instance-creation"]["instance-configuration"]["logging"]["log-directory"] + '/cron_screen_log.txt 2>&1" > fake_crontab.txt'], shell=True)
+	#subprocess.call(['echo "*/' + str(yamlPar["instance-creation"]["instance-configuration"]["logging"]["cron-interval"]) + ' * * * * bash `pwd`/screen_check.sh >> ' + yamlPar["instance-creation"]["instance-configuration"]["logging"]["log-directory"] + '/cron_screen_log.txt 2>&1" > fake_crontab.txt'], shell=True)
+	cronCommand = 'echo \"*/' + str(yamlPar["instance-creation"]["instance-configuration"]["logging"]["cron-interval"]) + ' * * * * bash `pwd`/screen_check.sh >> ' + yamlPar["instance-creation"]["instance-configuration"]["logging"]["log-directory"] + '/cron_screen_log.txt 2>&1\"'
+	try:
+   		 	cronCheck = subprocess.check_output(['crontab -l'], shell=True)
+	except subprocess.CalledProcessError as error:
+    		cronCheck = "no crontab"
+    	# ridiculous hack because checking for a crontab when there is none returns nonzero exit code so it works but then breaks immediately after
+    	# also it is bugged and requires double indentation for some reason
+	if "no crontab" in cronCheck:
+		subprocess.call([cronCommand + ' | crontab -'], shell=True)
+	else:
+		subprocess.call(['(crontab -l && ' + cronCommand + ') | crontab -'], shell=True)
 	# set up a cron job to run the script at the desired interval (TODO: fix this to base its location on the system - need to figure out where mac crontab goes first)
 
 

@@ -1,6 +1,25 @@
 Changelog
 =========
 
+Beta Build
+----------
+
+Version 0.5
+~~~~~~~~~~~
+
+Initial beta build designated as Version 0.5
+
+
+Alpha Build
+-----------
+
+Version 1.4
+~~~~~~~~~~~
+
+Logging functionality implemented for OSX and Linux
+
+Alpha build feature-complete other than directory construction (to be addressed in beta)
+
 Version 1.3
 ~~~~~~~~~~~
 
