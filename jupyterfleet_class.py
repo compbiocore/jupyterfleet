@@ -47,7 +47,6 @@ class aws(cloud):
 		instanceCreate = 'aws ec2 run-instances --image-id ' + yamlPar["instance-creation"]["cli-parameters"]["ami-id"] + ' --count ' + str(yamlPar["instance-creation"]["cli-parameters"]["instance-number"]) + ' --instance-type ' + yamlPar["instance-creation"]["cli-parameters"]["instance-type"] + ' --key-name ' + yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-name"] + ' --security-group-ids ' + yamlPar["instance-creation"]["cli-parameters"]["security-group-id"]
 		# generate the command to instantiate the instances in accordance with YAML specifications
 		subprocess.call([instanceCreate], shell=True, stdout=subprocess.PIPE)
-
 		print "Instances have been successfully requested and are presently instantiating."
 		print "Execution will now pause for 3 minutes to be sure all instances are active."
 		print "Their status can be viewed in the web console at this point."
@@ -57,11 +56,47 @@ class aws(cloud):
 		instanceCreate = 'aws ec2 request-spot-instances --spot-price 0.007 --instance-count ' + str(yamlPar["instance-creation"]["cli-parameters"]["instance-number"]) + ' --launch-specification \"{\\\"KeyName\\\": \\\"' + yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-name"] + '\\\", \\\"ImageId\\\": \\\"' + yamlPar["instance-creation"]["cli-parameters"]["ami-id"] + '\\\", \\\"InstanceType\\\": \\\"' + yamlPar["instance-creation"]["cli-parameters"]["instance-type"] + '\\\", \\\"SecurityGroupIds\\\": [\\\"' + yamlPar["instance-creation"]["cli-parameters"]["security-group-id"] + '\\\"]}\"'
 		# generate the command to instantiate the instances in accordance with YAML specifications
 		subprocess.call([instanceCreate], shell=True, stdout=subprocess.PIPE)
-
 		print "Spot instances have been successfully requested and are presently instantiating."
 		print "Execution will now pause for 3 minutes to be sure all instances are active."
 		print "Their status can be viewed in the web console at this point."
 		time.sleep(180)
+
+	def kill(self):
+		if arguments.kill:
+			print "All instances in the region specified in the YAML file will now be deactivated.  Execution will pause for 30 seconds to give you a chance to cancel (ctrl+c) if that is not desired.  Once that time elapses, this operation is irreversible."
+			time.sleep(30)
+			subprocess.call(['aws ec2 describe-instances | grep InstanceId | awk \'{print $2}\' | awk -F\'\"\' \'{ print $2 }\' | xargs aws ec2 terminate-instances --instance-ids'], shell=True, stdout=subprocess.PIPE)
+			sys.exit("Resources are now being deactivated.  Execution will now terminate.  Spin-down status can be monitored from the console and will take approximately one minute.")
+
+	def getIPs(self):
+		subprocess.call(['aws ec2 describe-instances   --query "Reservations[*].Instances[*].PublicIpAddress"   --output=text > ips.txt'], shell=True)
+		# use the AWS CLI to retrieve the list of IPs in the default region
+		subprocess.call(['tr "\t" "\n" < ips.txt > ips_newline.txt'], shell=True)
+		# split the raw output onto separate lines
+
+	def manageKey(self):
+		keyLocation = yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-path"] + '/' + yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-name"] + ".pem"
+		# store the full filepath of the keyfile for convenience due to length of expression
+		print("Making sure the keyfile's permissions are correctly set...")
+		if yamlPar["instance-creation"]["user-platform"] == "osx":
+			keyPermissions = subprocess.check_output(['stat -f \'%A %a %N\' ' + keyLocation], shell=True)
+		elif yamlPar["instance-creation"]["user-platform"] == "linux":
+			keyPermissions = subprocess.check_output(['stat -c \'%a %n\' ' + keyLocation], shell=True)
+		# check permissions of the keyfile
+		if int(keyPermissions[:3]) != 400:
+			# keyfile must have these exact permissions or the connection will be declined by AWS
+			subprocess.call(['chmod 400 ' + keyLocation], shell=True)
+			print("Attempting to change permissions to read-only...")
+			if yamlPar["instance-creation"]["user-platform"] == "osx":
+				keyPermissions = subprocess.check_output(['stat -f \'%A %a %N\' ' + keyLocation], shell=True)
+			elif yamlPar["instance-creation"]["user-platform"] == "linux":
+				keyPermissions = subprocess.check_output(['stat -c \'%a %n\' ' + keyLocation], shell=True)
+		# check again to see if update was successful with syntax based on user platform
+		if int(keyPermissions[:3]) != 400:
+			sys.exit("Error: Key permissions incorrect even after an attempt to modify them, likely due to inadequate user access level.  Unable to proceed.  Please contact your system administrator for assistance.")
+		else:
+			print("Permissions are already correct - proceeding.")
+		print("Done verifying permissions.")
 
 
 parser = argparse.ArgumentParser(description='Uses a YAML file to deploy a designated number of Jupyter instances on AWS according to user specifications.  Please visit http://placeholder for a thorough explanation of the YAML file\'s format.')
@@ -83,11 +118,13 @@ run = aws()
 run.checkSoftware()
 run.configureCLI()
 run.checkConfig()
+run.kill()
 if "spot" in yamlPar["instance-creation"]["cli-parameters"]:
 	run.spotRequest()
 else:
 	run.requestInstances()
-
+run.getIPs()
+run.manageKey()
 
 
 # TODO: ADD MANUAL CONFIRMATION ASKING WHETHER OR NOT TO PROCEED IF NUMBER OF REGISTRANTS IS GREATER THAN THE NUMBER OF INSTANCES
@@ -106,12 +143,6 @@ if yamlPar["instance-creation"]["aws-credentials"]["generate-configuration"] == 
 
 
 ################## KILL RESOURCES IF TOLD TO DO SO (must wait for CLI to be configured first just in case a new computer is being used)
-if arguments.kill:
-	print "All instances in the region specified in the YAML file will now be deactivated.  Execution will pause for 30 seconds to give you a chance to cancel (ctrl+c) if that is not desired.  Once that time elapses, this operation is irreversible."
-	time.sleep(30)
-	subprocess.call(['aws ec2 describe-instances | grep InstanceId | awk \'{print $2}\' | awk -F\'\"\' \'{ print $2 }\' | xargs aws ec2 terminate-instances --instance-ids'], shell=True, stdout=subprocess.PIPE)
-	sys.exit("Resources are now being deactivated.  Execution will now terminate.  Spin-down status can be monitored from the console and will take approximately one minute.")
-
 
 
 
@@ -123,35 +154,6 @@ if arguments.kill:
 
 
 
-subprocess.call(['aws ec2 describe-instances   --query "Reservations[*].Instances[*].PublicIpAddress"   --output=text > ips.txt'], shell=True)
-# use the AWS CLI to retrieve the list of IPs in the default region
-subprocess.call(['tr "\t" "\n" < ips.txt > ips_newline.txt'], shell=True)
-# split the raw output onto separate lines
-
-
-keyLocation = yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-path"] + '/' + yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-name"] + ".pem"
-# store the full filepath of the keyfile for convenience due to length of expression
-
-print("Making sure the keyfile's permissions are correctly set...")
-if yamlPar["instance-creation"]["user-platform"] == "osx":
-	keyPermissions = subprocess.check_output(['stat -f \'%A %a %N\' ' + keyLocation], shell=True)
-elif yamlPar["instance-creation"]["user-platform"] == "linux":
-	keyPermissions = subprocess.check_output(['stat -c \'%a %n\' ' + keyLocation], shell=True)
-# check permissions of the keyfile
-if int(keyPermissions[:3]) != 400:
-# keyfile must have these exact permissions or the connection will be declined by AWS
-	subprocess.call(['chmod 400 ' + keyLocation], shell=True)
-	print("Attempting to change permissions to read-only...")
-	if yamlPar["instance-creation"]["user-platform"] == "osx":
-		keyPermissions = subprocess.check_output(['stat -f \'%A %a %N\' ' + keyLocation], shell=True)
-	elif yamlPar["instance-creation"]["user-platform"] == "linux":
-		keyPermissions = subprocess.check_output(['stat -c \'%a %n\' ' + keyLocation], shell=True)
-	# check again to see if update was successful with syntax based on user platform
-	if int(keyPermissions[:3]) != 400:
-		sys.exit("Error: Key permissions incorrect even after an attempt to modify them, likely due to inadequate user access level.  Unable to proceed.  Please contact your system administrator for assistance.")
-else:
-	print("Permissions are already correct - proceeding.")
-print("Done verifying permissions.")
 
 
 print("Deploying Jupyter...")
