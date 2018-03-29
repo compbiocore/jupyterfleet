@@ -94,6 +94,12 @@ By convention, keyfiles are stored in the '.ssh' hidden subdirectory of the user
 
 The 'key-name' option is used to designate the name of the keyfile itself.
 
+**spot**
+
+*spot-price* (very optional parameter)
+
+The price to bid for a spot instance.  If this field is included in the YAML, JupyterFleet will submit spot requests; if not, it will use standard on-demand instances.  Please ensure that your bid is a reasonable amount - execution will pause for five minutes to give the requests time to procure, but if the bid is too low the software will then break.  It is a good idea to check the spot price history for your desired instance type to inform your bid value. 
+
 
 instance-configuration
 ~~~~~~~~~~~~~~~~~~~~~~

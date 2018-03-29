@@ -90,6 +90,9 @@
 <p>By convention, keyfiles are stored in the ‘.ssh’ hidden subdirectory of the user’s home directory i.e. ~/.ssh - this option should specify the directory’s path not including the name of the keyfile itself, which is specified immediately below.</p>
 <p><em>key-name</em></p>
 <p>The ‘key-name’ option is used to designate the name of the keyfile itself.</p>
+<p><strong>spot</strong></p>
+<p><em>spot-price</em> (very optional parameter)</p>
+<p>The price to bid for a spot instance.  If this field is included in the YAML, JupyterFleet will submit spot requests; if not, it will use standard on-demand instances.  Please ensure that your bid is a reasonable amount - execution will pause for five minutes to give the requests time to procure, but if the bid is too low the software will then break.  It is a good idea to check the spot price history for your desired instance type to inform your bid value.</p>
 </div>
 <div class="section" id="instance-configuration">
 <h3>instance-configuration<a class="headerlink" href="#instance-configuration" title="Permalink to this headline">¶</a></h3>

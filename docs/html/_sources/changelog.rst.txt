@@ -8,14 +8,21 @@ An option to create a cron job that will automatically kill all instances after 
 
 Directory generation
 
-Refactored code that will facilitate forking to introduce other cloud infrastructures besides AWS
-
 More informative errors as beta testing reveals issues
+
+A way to check if spot bid failed and fall back on on-demand instances
 
 
 
 Beta Build
 ----------
+
+Version 0.5.1
+~~~~~~~~~~~~~
+
+Code refactored for modularity
+
+Added option to use spot instances instead of on-demand instances
 
 Version 0.5
 ~~~~~~~~~~~
