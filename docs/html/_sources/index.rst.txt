@@ -27,6 +27,8 @@ The software (in its provisional state) can be found at the following repository
 
 https://github.com/compbiocore/jupyterfleet
 
+Please note that this tool has not been tested on Windows; furthermore, no such testing on my part is planned at this time.  If you are interested in taking on this responsibility, excellent!  Please open an issue on Github and we can proceed from there.
+
 Pip and Conda installations will be available pending a production build.
 
 

@@ -1,5 +1,6 @@
 instance-creation:
-    platform                 : (user's local platform, used for determining filepaths for things like crontab)
+    cloud-service                 : aws
+    user-platform                 : osx
     aws-credentials:
         generate-configuration      : TRUE
         default-region              : us-east-2
@@ -13,16 +14,22 @@ instance-creation:
         keyfile:
             key-path        : /users/aleith/.ssh
             key-name        : aleith-workshop
+        spot:
+            spot-price               : .007
+            wait                     : FALSE (nonfunctional)
+            fallback                 : on-demand (nonfunctional)
+
+
     instance-configuration:
         directory-parameters:
             generate-directory  : TRUE
             user-list           : registration_tiny.csv
-            directory-type      : (controls what information is used in directory generation)
+            directory-type      : (controls what information is used in directory generation e.g. should person's name be included?)
         verbosity                : FALSE
         logging:
            cron-interval         : 10
            log-directory         : .
-           wait                  : TRUE
+           wait                  : FALSE
         username                 : ubuntu
         conda-path               : /home/ubuntu/miniconda/bin
         jupyter-port             : 15500
