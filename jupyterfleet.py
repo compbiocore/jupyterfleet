@@ -55,7 +55,8 @@ class cloud:
 			num_lines = sum(1 for line in open(yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["user-list"]))
 			if num_lines > yamlPar["instance-creation"]["cli-parameters"]["instance-number"]:
 				sys.exit("\033[1m" + "Warning: Insufficient instances for all participants.  Exiting without generating directory." + "\033[0m")
-			subprocess.call(['bash generate_directory.sh > user_directory.html'], shell=True)
+			bashCommand = "bash generate_directory.sh " + str(yamlPar["instance-creation"]["instance-configuration"]["jupyter-password"]) + " > user_directory.html"
+			subprocess.call([bashCommand], shell=True)
 
 
 
@@ -130,17 +131,18 @@ class aws(cloud):
 		TODO: ADD DOCUMENTATION FOR FALLBACK PROCEDURES ONCE THEY ACTUALLY EXIST
 
 		"""
-		instanceCreate = 'aws ec2 request-spot-instances --spot-price 0.007 --instance-count ' + str(yamlPar["instance-creation"]["cli-parameters"]["instance-number"]) + ' --launch-specification \"{\\\"KeyName\\\": \\\"' + yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-name"] + '\\\", \\\"ImageId\\\": \\\"' + yamlPar["instance-creation"]["cli-parameters"]["ami-id"] + '\\\", \\\"InstanceType\\\": \\\"' + yamlPar["instance-creation"]["cli-parameters"]["instance-type"] + '\\\", \\\"SecurityGroupIds\\\": [\\\"' + yamlPar["instance-creation"]["cli-parameters"]["security-group-id"] + '\\\"]}\"'
+		instanceCreate = 'aws ec2 request-spot-instances --spot-price ' + str(yamlPar["instance-creation"]["cli-parameters"]["spot"]["spot-price"]) + ' --instance-count ' + str(yamlPar["instance-creation"]["cli-parameters"]["instance-number"]) + ' --launch-specification \"{\\\"KeyName\\\": \\\"' + yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-name"] + '\\\", \\\"ImageId\\\": \\\"' + yamlPar["instance-creation"]["cli-parameters"]["ami-id"] + '\\\", \\\"InstanceType\\\": \\\"' + yamlPar["instance-creation"]["cli-parameters"]["instance-type"] + '\\\", \\\"SecurityGroupIds\\\": [\\\"' + yamlPar["instance-creation"]["cli-parameters"]["security-group-id"] + '\\\"]}\"'
 		# generate the command to instantiate the instances in accordance with YAML specifications
 		subprocess.call([instanceCreate], shell=True, stdout=subprocess.PIPE)
 		print "Spot instances have been successfully requested and are presently instantiating."
-		print "Execution will now pause for 3 minutes to be sure all instances are active."
+		print "Execution will now pause for " + str(yamlPar["instance-creation"]["cli-parameters"]["spot"]["wait-time"]) + " minutes to be sure all instances are active."
 		print "Their status can be viewed in the web console at this point."
-		time.sleep(180)
+		time.sleep(int(yamlPar["instance-creation"]["cli-parameters"]["spot"]["wait-time"]) * 60)
 		if yamlPar["instance-creation"]["cli-parameters"]["spot"]["fallback"] == True:
 			lengthBase = int(yamlPar["instance-creation"]["cli-parameters"]["instance-number"])
 			lengthCheck = int(subprocess.check_output(['aws ec2 describe-spot-instance-requests --filters Name=state,Values=active | grep "Your spot request is fulfilled." | wc -l'], shell=True))
 			allActive = (lengthBase == lengthCheck)
+			print(allActive)
 			# check if all requested spot instances have actually been generated (i.e. see if the number of spot requests marked 'active' is the same as the number requested)
 
 	def kill(self):
@@ -308,6 +310,7 @@ class aws(cloud):
 parser = argparse.ArgumentParser(description='Uses a YAML file to deploy a designated number of Jupyter instances on AWS according to user specifications.  Please visit http://placeholder for a thorough explanation of the YAML file\'s format.')
 parser.add_argument('-y', '--yaml', type=str, required = True, help = 'The YAML configuraton file')
 parser.add_argument('--kill', help = 'Deactivates all resources', action="store_true")
+parser.add_argument('--skip', help = 'Skip the spin-up steps and jump to Jupyter activation', action="store_true")
 # TODO: add '--skip', default False, to skip directly to manageKey()
 
 # Parse arguments
@@ -321,31 +324,21 @@ if "keyfile" in yamlPar["instance-creation"]["cli-parameters"]:
 
 
 
-
-run = aws()
-run.checkSoftware()
-run.configureCLI()
-run.checkConfig()
-run.kill()
-if "spot" in yamlPar["instance-creation"]["cli-parameters"]:
-	run.spotRequest()
-else:
-	run.requestInstances()
-run.getIPs()
-run.manageKey()
-run.startJupyter()
-run.createLogger()
-run.createTable()
-run.createDirectory()
-
-
-
-
-
-
-
-if yamlPar["instance-creation"]["aws-credentials"]["generate-configuration"] == False:
-	print(yamlPar["instance-creation"]["nonsense"]["garbage"])
-# test case to see how it reacts to the yaml not having a subfield that is referenced but never actually used due to a logical condition
-# it does not apppear to break in that case, meaning users can outright omit irrelevant parameters from the yaml
+if  __name__ == "__main__":
+	run = aws()
+	if arguments.skip == False:
+		run.checkSoftware()
+		run.configureCLI()
+		run.checkConfig()
+		run.kill()
+		if "spot" in yamlPar["instance-creation"]["cli-parameters"]:
+			run.spotRequest()
+		else:
+			run.requestInstances()
+	run.getIPs()
+	run.manageKey()
+	run.startJupyter()
+	run.createLogger()
+	run.createTable()
+	run.createDirectory()
 

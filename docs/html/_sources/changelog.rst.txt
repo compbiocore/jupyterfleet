@@ -10,13 +10,32 @@ Directory generation
 
 More informative errors as beta testing reveals issues
 
-A way to check if spot bid failed and fall back on on-demand instances
+A way to fall back on on-demand instances if spots are not acquired
 
-An argparse flag to skip the spin-up steps, so that in the event the workflow fails due to a bad keyfile, a user can avoid having to spin-down and start from scratch
 
 
 Beta Build
 ----------
+
+Verson 0.6
+~~~~~~~~~~
+
+Added a customizable wait time for spot instances
+
+Added a way to check if spot bid fails
+
+Began adding fallback options for the case where spot bid fails
+
+Fixed a bug regarding spot price parsing
+
+The user directory now shows the Jupyter password by default for ease of copying
+
+Added command line option '--skip' to skip instance spin-up (proceeding directly to IP retrieval and key valdiation)
+
+Version 0.5.3
+~~~~~~~~~~~~~
+
+Added \_\_name\_\_ check
 
 Version 0.5.2
 ~~~~~~~~~~~~~

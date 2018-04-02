@@ -50,11 +50,23 @@
 <p>An option to create a cron job that will automatically kill all instances after X hours to avoid accidental overbilling</p>
 <p>Directory generation</p>
 <p>More informative errors as beta testing reveals issues</p>
-<p>A way to check if spot bid failed and fall back on on-demand instances</p>
-<p>An argparse flag to skip the spin-up steps, so that in the event the workflow fails due to a bad keyfile, a user can avoid having to spin-down and start from scratch</p>
+<p>A way to fall back on on-demand instances if spots are not acquired</p>
 </div>
 <div class="section" id="beta-build">
 <h2>Beta Build<a class="headerlink" href="#beta-build" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="verson-0-6">
+<h3>Verson 0.6<a class="headerlink" href="#verson-0-6" title="Permalink to this headline">¶</a></h3>
+<p>Added a customizable wait time for spot instances</p>
+<p>Added a way to check if spot bid fails</p>
+<p>Began adding fallback options for the case where spot bid fails</p>
+<p>Fixed a bug regarding spot price parsing</p>
+<p>The user directory now shows the Jupyter password by default for ease of copying</p>
+<p>Added command line option ‘–skip’ to skip instance spin-up (proceeding directly to IP retrieval and key valdiation)</p>
+</div>
+<div class="section" id="version-0-5-3">
+<h3>Version 0.5.3<a class="headerlink" href="#version-0-5-3" title="Permalink to this headline">¶</a></h3>
+<p>Added __name__ check</p>
+</div>
 <div class="section" id="version-0-5-2">
 <h3>Version 0.5.2<a class="headerlink" href="#version-0-5-2" title="Permalink to this headline">¶</a></h3>
 <p>Implemented docstrings for functions - YAML documentation can be found on this site</p>

@@ -94,9 +94,13 @@
 <p>By convention, keyfiles are stored in the ‘.ssh’ hidden subdirectory of the user’s home directory i.e. ~/.ssh - this option should specify the directory’s path not including the name of the keyfile itself, which is specified immediately below.</p>
 <p><em>key-name</em></p>
 <p>The ‘key-name’ option is used to designate the name of the keyfile itself.</p>
-<p><strong>spot</strong></p>
-<p><em>spot-price</em> (very optional parameter)</p>
+<p><strong>spot</strong> (this field and all subfields are optional)</p>
+<p><em>spot-price</em></p>
 <p>The price to bid for a spot instance.  If this field is included in the YAML, JupyterFleet will submit spot requests; if not, it will use standard on-demand instances.  Please ensure that your bid is a reasonable amount - execution will pause for five minutes to give the requests time to procure, but if the bid is too low the software will then break.  It is a good idea to check the spot price history for your desired instance type to inform your bid value.</p>
+<p><em>wait-time</em></p>
+<p>The amount of time in minutes to wait for the spot requests to be filled.  Based on testing, 3 minutes is generally sufficient for 30 instances to be successfully requested, though a lower price should generally be accompanied by a longer wait time.  Once this time elapses, JupyterFleet will check to see if all requests have been filled and then take action based on the fallback options [not yet implemented].</p>
+<p><em>fallback</em> (not yet implemented)</p>
+<p>This field will control what the software does if all spot requests are not fulfilled (terminate itself, continue with only the instances that exist, or use on-demand instances to fill the rest of the quota).</p>
 </div>
 <div class="section" id="instance-configuration">
 <h3>instance-configuration<a class="headerlink" href="#instance-configuration" title="Permalink to this headline">¶</a></h3>
@@ -123,6 +127,8 @@
 <p>The ‘conda-path’ option is used to specify the full filepath to the conda binary folder within the AMI.  If this path is misspecified, attempts to activate the Jupyter server will fail and the screen will die - you can monitor for this problem by enabling the ‘wait’ option under ‘logging’ as described above.</p>
 <p><strong>jupyter-port</strong></p>
 <p>The ‘jupyter-port’ option is used to specify which port the Jupyter server is exposed on (as specified in the Jupyter configuration file on the AMI).  This option is used to generate the list of instance links and the user directory and does not ameliorate a misconfigured security group (i.e. even if ‘jupyter-port’ is listed correctly, Jupyter will be inaccessible if the wrong security group is applied to the instances).  Likewise, if the security group is correct but ‘jupyter-port’ is wrong, Jupyter itself will work fine but the directory will be populated by dead links.</p>
+<p><strong>jupyter-password</strong></p>
+<p>The ‘jupyter-password’ option is used to specify the password requried to access the Jupyter server on the instances, as designated in the AMI’s Jupyter permissions file.  This password will be visible at the top of the user directory so that users can easily copy and paste it to access their Jupyter instance.</p>
 </div>
 </div>
 </div>

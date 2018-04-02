@@ -2,12 +2,12 @@ instance-creation:
     cloud-service                 : aws
     user-platform                 : osx
     aws-credentials:
-        generate-configuration      : TRUE
+        generate-configuration      : FALSE
         default-region              : us-east-2
         key-id                      : [REDACTED]
         secret-key                  : [REDACTED]
     cli-parameters:
-        ami-id               : ami-64a49001
+        ami-id               : ami-06e2d763
         instance-type        : t2.micro
         instance-number      : 3
         security-group-id    : [REDACTED]
@@ -15,10 +15,10 @@ instance-creation:
             key-path        : /users/aleith/.ssh
             key-name        : aleith-workshop
         spot:
-            spot-price               : .007
-            wait                     : FALSE (nonfunctional)
-            fallback                 : on-demand (nonfunctional)
-
+            spot-price               : .0035
+            wait-time                : 2
+            retry                    : FALSE (nonfunctional)
+            fallback                 : False
 
     instance-configuration:
         directory-parameters:
@@ -31,5 +31,6 @@ instance-creation:
            log-directory         : .
            wait                  : FALSE
         username                 : ubuntu
-        conda-path               : /home/ubuntu/miniconda/bin
+        conda-path               : /home/ubuntu/miniconda2/bin
         jupyter-port             : 15500
+        jupyter-password         : [REDACTED]
