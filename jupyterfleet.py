@@ -144,6 +144,19 @@ class aws(cloud):
 			allActive = (lengthBase == lengthCheck)
 			print(allActive)
 			# check if all requested spot instances have actually been generated (i.e. see if the number of spot requests marked 'active' is the same as the number requested)
+			priceCheck = int(subprocess.check_output(['aws ec2 describe-spot-instance-requests --query SpotInstanceRequests[*].{Status:*} | grep "price-too-low" | wc -l'], shell=True))
+			if(priceCheck) > 0:
+				print("Bid is too low; aborting spot use (manually delete requests from console for now)")
+				print("Invoking contingency settings...")
+				if yamlPar["instance-creation"]["cli-parameters"]["spot"]["contingency-type"] == "on-demand":
+					print("Using on-demand instances instead of spot instances...")
+					run.requestInstances()
+				elif yamlPar["instance-creation"]["cli-parameters"]["spot"]["contingency-type"] == "continue":
+					print("Continuing with whatever instances did spawn...")
+				elif yamlPar["instance-creation"]["cli-parameters"]["spot"]["contingency-type"] == "abort":
+					sys.exit("Aborting run [manually kill everything for now]")
+
+
 
 	def kill(self):
 		"""Kill all instances in the default region"""
@@ -294,9 +307,11 @@ class aws(cloud):
 
 
 #'wait' - use a while loop to check every 2 minutes
+# Based on testing, if the price is too low it will never be filled, so this option would be pointless
 
 
-#Fallback behavior (what to do if requests are not filled, or if 'wait' has run unsuccessfully for 10 minutes:
+
+#Fallback behavior (what to do if requests are not filled):
 #'on-demand' - terminate unfilled requests and use on-demand instances to fill the rest of the slots
 #'ignore' - proceed without all slots filled
 #'abort' - spin-down instances and exit
@@ -311,7 +326,6 @@ parser = argparse.ArgumentParser(description='Uses a YAML file to deploy a desig
 parser.add_argument('-y', '--yaml', type=str, required = True, help = 'The YAML configuraton file')
 parser.add_argument('--kill', help = 'Deactivates all resources', action="store_true")
 parser.add_argument('--skip', help = 'Skip the spin-up steps and jump to Jupyter activation', action="store_true")
-# TODO: add '--skip', default False, to skip directly to manageKey()
 
 # Parse arguments
 arguments = parser.parse_args()
