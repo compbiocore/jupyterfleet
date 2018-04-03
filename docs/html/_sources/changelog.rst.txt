@@ -18,13 +18,14 @@ Beta Build
 ----------
 
 Version 0.6.1
+~~~~~~~~~~~~~
 
 Fixed typo
 
 Added temporary fallback option for the case where bid is deemed so low that it is invalid
 
 Version 0.6
-~~~~~~~~~~
+~~~~~~~~~~~
 
 Added a customizable wait time for spot instances
 
