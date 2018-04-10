@@ -49,11 +49,23 @@
 <h2>Upcoming Features<a class="headerlink" href="#upcoming-features" title="Permalink to this headline">¶</a></h2>
 <p>An option to create a cron job that will automatically kill all instances after X hours to avoid accidental overbilling</p>
 <p>Directory generation</p>
-<p>More informative errors as beta testing reveals issues</p>
-<p>A way to fall back on on-demand instances if spots are not acquired</p>
+<p>More informative errors as beta testing reveals issues (ongoing)</p>
+<p>A way to purge the final line from the crontab upon running –kill if logging is enabled in the YAML</p>
 </div>
 <div class="section" id="beta-build">
 <h2>Beta Build<a class="headerlink" href="#beta-build" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="version-0-8">
+<h3>Version 0.8<a class="headerlink" href="#version-0-8" title="Permalink to this headline">¶</a></h3>
+<p>Added more robust fallback checking, auto-removal of spot requests if bid is too low</p>
+</div>
+<div class="section" id="version-0-7-1">
+<h3>Version 0.7.1<a class="headerlink" href="#version-0-7-1" title="Permalink to this headline">¶</a></h3>
+<p>Added error message for the case where the user list is missing</p>
+</div>
+<div class="section" id="version-0-7">
+<h3>Version 0.7<a class="headerlink" href="#version-0-7" title="Permalink to this headline">¶</a></h3>
+<p>Fixed critical issue with logging (correct directory is now checked for IPs)</p>
+</div>
 <div class="section" id="version-0-6-1">
 <h3>Version 0.6.1<a class="headerlink" href="#version-0-6-1" title="Permalink to this headline">¶</a></h3>
 <p>Fixed typo</p>

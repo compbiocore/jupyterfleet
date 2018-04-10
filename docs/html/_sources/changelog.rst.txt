@@ -8,14 +8,32 @@ An option to create a cron job that will automatically kill all instances after 
 
 Directory generation
 
-More informative errors as beta testing reveals issues
+More informative errors as beta testing reveals issues (ongoing)
 
-A way to fall back on on-demand instances if spots are not acquired
-
+A way to purge the final line from the crontab upon running --kill if logging is enabled in the YAML
 
 
 Beta Build
 ----------
+
+
+Version 0.8
+~~~~~~~~~~~
+
+Added more robust fallback checking, auto-removal of spot requests if bid is too low
+
+Version 0.7.1
+~~~~~~~~~~~~~
+
+Added error message for the case where the user list is missing
+
+
+Version 0.7
+~~~~~~~~~~~
+
+Fixed critical issue with logging (correct directory is now checked for IPs)
+
+
 
 Version 0.6.1
 ~~~~~~~~~~~~~
