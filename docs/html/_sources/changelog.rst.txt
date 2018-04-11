@@ -6,16 +6,28 @@ Upcoming Features
 
 An option to create a cron job that will automatically kill all instances after X hours to avoid accidental overbilling
 
-Directory generation
+An option to automatically push the directory to a Github repo (i.e. for use with Github Pages)
 
 More informative errors as beta testing reveals issues (ongoing)
 
 A way to purge the final line from the crontab upon running --kill if logging is enabled in the YAML
 
+An option to enable or disable OSX alerts, and to customize which alerts to get (all alerts, only startup alerts, or only critical failure alerts)
+
+Logs that summarize instance status in a concise, human-skimmable fashion
+
 
 Beta Build
 ----------
 
+Version 0.8.1
+~~~~~~~~~~~~~
+
+Logging crontab bugs fixed
+
+Logging script function partially overhauled (raw log file per iteration)
+
+Partial implementation of OSX alert function
 
 Version 0.8
 ~~~~~~~~~~~

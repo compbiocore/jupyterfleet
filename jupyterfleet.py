@@ -37,7 +37,6 @@ class cloud:
 
 		This HTML file can then be pushed directly to any website and will let users access their instances by clicking a link
 
-		#TODO: MAYBE ADD AN OPTION TO PUT THE JUPYTER SERVER PASSWORD AT THE TOP OF THE FILE (AND CORRESPONDING YAML FIELD)
 
 		Uses file(s):
 			The 'user-list' file denoted in the YAML
@@ -52,12 +51,15 @@ class cloud:
 			
 		"""
 		if yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["generate-directory"] == True:
-			num_lines = sum(1 for line in open(yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["user-list"]))
-			if num_lines > yamlPar["instance-creation"]["cli-parameters"]["instance-number"]:
-				sys.exit("\033[1m" + "Warning: Insufficient instances for all participants.  Exiting without generating directory." + "\033[0m")
-			bashCommand = "bash generate_directory.sh " + str(yamlPar["instance-creation"]["instance-configuration"]["jupyter-password"]) + " > user_directory.html"
-			subprocess.call([bashCommand], shell=True)
-
+			if os.path.exists(yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["user-list"]):
+				num_lines = sum(1 for line in open(yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["user-list"]))
+				if num_lines > yamlPar["instance-creation"]["cli-parameters"]["instance-number"]:
+					sys.exit("\033[1m" + "Warning: Insufficient instances for all participants.  Exiting without generating directory." + "\033[0m")
+				subprocess.call(["cp " + yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["user-list"] + " registration_tiny.csv"], shell=True)
+				bashCommand = "bash generate_directory.sh " + str(yamlPar["instance-creation"]["instance-configuration"]["jupyter-password"]) + " > user_directory.html"
+				subprocess.call([bashCommand], shell=True)
+			else:
+				print("\033[1m" + "Error: No user list found under the specified filename.  Skipping directory generation.  Instances are still active." + "\033[0m")
 
 
 class aws(cloud):
@@ -131,30 +133,50 @@ class aws(cloud):
 		TODO: ADD DOCUMENTATION FOR FALLBACK PROCEDURES ONCE THEY ACTUALLY EXIST
 
 		"""
+		subprocess.call(["osascript -e \'display notification \"Spots have been requested\" with title \"JupyterFleet\" subtitle \"JupyterFleet Alert\"\'"], shell=True)
 		instanceCreate = 'aws ec2 request-spot-instances --spot-price ' + str(yamlPar["instance-creation"]["cli-parameters"]["spot"]["spot-price"]) + ' --instance-count ' + str(yamlPar["instance-creation"]["cli-parameters"]["instance-number"]) + ' --launch-specification \"{\\\"KeyName\\\": \\\"' + yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-name"] + '\\\", \\\"ImageId\\\": \\\"' + yamlPar["instance-creation"]["cli-parameters"]["ami-id"] + '\\\", \\\"InstanceType\\\": \\\"' + yamlPar["instance-creation"]["cli-parameters"]["instance-type"] + '\\\", \\\"SecurityGroupIds\\\": [\\\"' + yamlPar["instance-creation"]["cli-parameters"]["security-group-id"] + '\\\"]}\"'
 		# generate the command to instantiate the instances in accordance with YAML specifications
-		subprocess.call([instanceCreate], shell=True, stdout=subprocess.PIPE)
-		print "Spot instances have been successfully requested and are presently instantiating."
-		print "Execution will now pause for " + str(yamlPar["instance-creation"]["cli-parameters"]["spot"]["wait-time"]) + " minutes to be sure all instances are active."
-		print "Their status can be viewed in the web console at this point."
-		time.sleep(int(yamlPar["instance-creation"]["cli-parameters"]["spot"]["wait-time"]) * 60)
-		if yamlPar["instance-creation"]["cli-parameters"]["spot"]["fallback"] == True:
-			lengthBase = int(yamlPar["instance-creation"]["cli-parameters"]["instance-number"])
-			lengthCheck = int(subprocess.check_output(['aws ec2 describe-spot-instance-requests --filters Name=state,Values=active | grep "Your spot request is fulfilled." | wc -l'], shell=True))
-			allActive = (lengthBase == lengthCheck)
-			print(allActive)
-			# check if all requested spot instances have actually been generated (i.e. see if the number of spot requests marked 'active' is the same as the number requested)
-			priceCheck = int(subprocess.check_output(['aws ec2 describe-spot-instance-requests --query SpotInstanceRequests[*].{Status:*} | grep "price-too-low" | wc -l'], shell=True))
-			if(priceCheck) > 0:
-				print("Bid is too low; aborting spot use (manually delete requests from console for now)")
-				print("Invoking contingency settings...")
-				if yamlPar["instance-creation"]["cli-parameters"]["spot"]["contingency-type"] == "on-demand":
-					print("Using on-demand instances instead of spot instances...")
-					run.requestInstances()
-				elif yamlPar["instance-creation"]["cli-parameters"]["spot"]["contingency-type"] == "continue":
-					print("Continuing with whatever instances did spawn...")
-				elif yamlPar["instance-creation"]["cli-parameters"]["spot"]["contingency-type"] == "abort":
-					sys.exit("Aborting run [manually kill everything for now]")
+		resultString = subprocess.call([instanceCreate], shell=True, stdout=subprocess.PIPE)
+		if resultString == 0: # if there is no error with the spot request command
+			print "Spot instances have been successfully requested and are presently instantiating."
+			print "Execution will now pause for " + str(yamlPar["instance-creation"]["cli-parameters"]["spot"]["wait-time"]) + " minutes to be sure all instances are active."
+			print "Their status can be viewed in the web console at this point."
+			time.sleep(int(yamlPar["instance-creation"]["cli-parameters"]["spot"]["wait-time"]) * 60)
+			if yamlPar["instance-creation"]["cli-parameters"]["spot"]["fallback"] == True:
+				lengthBase = int(yamlPar["instance-creation"]["cli-parameters"]["instance-number"])
+				lengthCheck = int(subprocess.check_output(['aws ec2 describe-spot-instance-requests --filters Name=state,Values=active | grep "Your spot request is fulfilled." | wc -l'], shell=True))
+				allActive = (lengthBase == lengthCheck)
+				# check if all requested spot instances have actually been generated (i.e. see if the number of spot requests marked 'active' is the same as the number requested)
+				priceCheck = int(subprocess.check_output(['aws ec2 describe-spot-instance-requests --query SpotInstanceRequests[*].{Status:*} | grep "price-too-low" | wc -l'], shell=True))
+				if(priceCheck) > 0:
+					print("Your bid was too low to be filled.  Now deleting all spot requests...")
+					subprocess.call(['aws ec2 describe-spot-instance-requests --query "SpotInstanceRequests[*].SpotInstanceRequestId" --output=text > sirfile.txt'], shell=True)
+					subprocess.call(['tr "\t" "\n" < sirfile.txt > sirfile_newline.txt'], shell=True)
+					subprocess.call(['rm sirfile.txt'], shell=True)
+					sir = open("sirfile_newline.txt",'r')
+					for entry in sir:
+						entry = entry.strip('\n')
+						bashCommand = 'aws ec2 cancel-spot-instance-requests --spot-instance-request-id ' + entry + ''
+						with open(os.devnull, "w") as f:
+							subprocess.call([bashCommand], shell=True, stdout=f)
+						print("deleted %s") % entry
+					subprocess.call(["rm sirfile_newline.txt"], shell=True)
+
+
+
+
+
+
+					print("Invoking contingency settings...")
+					if yamlPar["instance-creation"]["cli-parameters"]["spot"]["contingency-type"] == "on-demand":
+						print("Using on-demand instances instead of spot instances...")
+						run.requestInstances()
+					elif yamlPar["instance-creation"]["cli-parameters"]["spot"]["contingency-type"] == "continue":
+						print("Continuing with whatever instances did spawn...")
+					elif yamlPar["instance-creation"]["cli-parameters"]["spot"]["contingency-type"] == "abort":
+						sys.exit("Aborting run [manually kill everything for now]")
+		elif resultString == 255: # the error code for a bid that is so low it is invalid
+			sys.exit("Please increase the bid and retry.  No instances have been generated.")
 
 
 
@@ -162,6 +184,7 @@ class aws(cloud):
 		"""Kill all instances in the default region"""
 
 		# TODO: MAKE THIS FUNCTION MORE CONTROLLABLE, WITH TEXT VALIDATION INSTEAD OF WAITING, EXITING WITHOUT KILLING OTHERWISE
+		# REMOVE LAST LINE FROM CRONTAB, DELETE CRONTAB-RELATED SCRIPT
 		if arguments.kill:
 			print "All instances in the region specified in the YAML file will now be deactivated.  Execution will pause for 30 seconds to give you a chance to cancel (ctrl+c) if that is not desired.  Once that time elapses, this operation is irreversible."
 			time.sleep(30)
@@ -202,6 +225,8 @@ class aws(cloud):
 		"""
 		#keyLocation = yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-path"] + '/' + yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-name"] + ".pem"
 		# store the full filepath of the keyfile for convenience due to length of expression
+		if (os.path.exists(yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-path"]) == False):
+			sys.exit("\033[1m" + "Fatal Error: Key directory not found.  Please make sure 'key-path' is specified correctly in the YAML." + "\033[0m")
 		print("Making sure the keyfile's permissions are correctly set...")
 		if yamlPar["instance-creation"]["user-platform"] == "osx":
 			keyPermissions = subprocess.check_output(['stat -f \'%A %a %N\' ' + keyLocation], shell=True)
@@ -239,7 +264,7 @@ class aws(cloud):
 			if yamlPar["instance-creation"]["instance-configuration"]["verbosity"] == True:
 				print(ip)
 				# if verbose, print the IP so user can track the process
-			bashCommand = 'ssh -oStrictHostKeyChecking=no -o \"UserKnownHostsFile /dev/null\" -i ' + keyLocation + ' ' + yamlPar["instance-creation"]["instance-configuration"]["username"] + '@' + ip + ' "screen -dm bash -c \''+ yamlPar["instance-creation"]["instance-configuration"]["conda-path"] +'/jupyter notebook\'"'
+			bashCommand = 'ssh -q -oStrictHostKeyChecking=no -o \"UserKnownHostsFile /dev/null\" -i ' + keyLocation + ' ' + yamlPar["instance-creation"]["instance-configuration"]["username"] + '@' + ip + ' "screen -dm bash -c \''+ yamlPar["instance-creation"]["instance-configuration"]["conda-path"] +'/jupyter notebook\'"'
 			# assemble the command to access each IP and activate Jupyter in a detached screen
 			# do not add to UserKnownHostsFile because eventually an IP will be reused and your computer will erroneously flag it as a man-in-the-middle attack and break execution
 			subprocess.call([bashCommand], shell=True)
@@ -276,13 +301,28 @@ class aws(cloud):
 		"""
 		if yamlPar["instance-creation"]["instance-configuration"]["logging"]["cron-interval"] > 0:
 		# setting the interval to 0 will disable logging
+			#subprocess.call(['touch ' + yamlPar["instance-creation"]["instance-configuration"]["logging"]["log-directory"] + '/cron_screen_log.txt'], shell=True)
 			subprocess.call(['echo "#!/bin/bash" > screen_check.sh'], shell=True)
-			subprocess.call(['echo "for IP_ADDRESS in \`cat ips_newline.txt\` ; do" >> screen_check.sh'], shell=True)
-			bashCommand = 'echo \"' + yamlPar["instance-creation"]["instance-configuration"]["username"] + '@\${IP_ADDRESS}\"'
-			subprocess.call(['echo ' + bashCommand + ' >> screen_check.sh'], shell=True)
+			fileCommand = '> ' + yamlPar["instance-creation"]["instance-configuration"]["logging"]["log-directory"] + '/cron_screen_log.txt'
+			subprocess.call(['echo \"' + fileCommand + '\" > screen_check.sh'], shell=True)
+			
+			#scriptCommand = "osascript -e \\'display notification \\\"Spots are being requested\\\" with title \\\"JupyterFleet Alert\\\" subtitle \\\"Raw log re-generated\\\"\\'"
+			# failed due to extra slash before single quotes
+			scriptCommand = "osascript -e 'display notification \\\"Raw log re-generated\\\" with title \\\"JupyterFleet\\\" subtitle \\\"JupyterFleet Alert\\\"'"
+
+			subprocess.call(['echo \"' + scriptCommand + '\" >> screen_check.sh'], shell=True)
+			
+
+			subprocess.call(['echo "for IP_ADDRESS in \`cat ' + workingDirectory +'/ips_newline.txt\` ; do" >> screen_check.sh'], shell=True)
+			#bashCommand = 'echo \"' + yamlPar["instance-creation"]["instance-configuration"]["username"] + '@\${IP_ADDRESS}\"'
+			#subprocess.call(['echo ' + bashCommand + ' >> screen_check.sh'], shell=True)
 			bashCommand = 'ssh -oStrictHostKeyChecking=no -i ' + keyLocation + ' ' + yamlPar["instance-creation"]["instance-configuration"]["username"] + '@\${IP_ADDRESS} \"screen -ls\"'
 			subprocess.call(['echo ' + bashCommand + ' >> screen_check.sh'], shell=True)
 			subprocess.call(['echo "done" >> screen_check.sh'], shell=True)
+			subprocess.call(['echo "echo \\"-----------------------------------------------------------\\"" >> screen_check.sh'], shell=True)
+			subprocess.call(['echo "echo \\" \\" "  >> screen_check.sh'], shell=True)
+			subprocess.call(['echo "echo \\" \\" "  >> screen_check.sh'], shell=True)
+			subprocess.call(['echo "echo \\" \\" "  >> screen_check.sh'], shell=True)
 			# use the YAML parameters to write a bash script that logs into each IP and lists the active screens
 			#subprocess.call(['echo "*/' + str(yamlPar["instance-creation"]["instance-configuration"]["logging"]["cron-interval"]) + ' * * * * bash `pwd`/screen_check.sh >> ' + yamlPar["instance-creation"]["instance-configuration"]["logging"]["log-directory"] + '/cron_screen_log.txt 2>&1" > fake_crontab.txt'], shell=True)
 			cronCommand = 'echo \"*/' + str(yamlPar["instance-creation"]["instance-configuration"]["logging"]["cron-interval"]) + ' * * * * bash `pwd`/screen_check.sh >> ' + yamlPar["instance-creation"]["instance-configuration"]["logging"]["log-directory"] + '/cron_screen_log.txt 2>&1\"'
@@ -300,10 +340,14 @@ class aws(cloud):
 
 
 
+# "1 Socket"
+# means Jupyter is running
+# "No Sockets"
+# means Jupyter is not running
+# "Operation timed out"
+# means the node is entirely down
 
-
-
-
+#test = int(subprocess.check_output(['grep "1 Socket" cron_screen_log_backup.txt | wc -l'], shell=True))
 
 
 #'wait' - use a while loop to check every 2 minutes
@@ -340,6 +384,7 @@ if "keyfile" in yamlPar["instance-creation"]["cli-parameters"]:
 
 if  __name__ == "__main__":
 	run = aws()
+	workingDirectory = os.getcwd()
 	if arguments.skip == False:
 		run.checkSoftware()
 		run.configureCLI()

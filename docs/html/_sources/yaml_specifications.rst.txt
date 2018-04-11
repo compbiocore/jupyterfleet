@@ -104,9 +104,11 @@ The price to bid for a spot instance.  If this field is included in the YAML, Ju
 
 The amount of time in minutes to wait for the spot requests to be filled.  Based on testing, 3 minutes is generally sufficient for 30 instances to be successfully requested, though a lower price should generally be accompanied by a longer wait time.  Once this time elapses, JupyterFleet will check to see if all requests have been filled and then take action based on the fallback options [not yet implemented].
 
-*fallback* (not yet implemented)
+*fallback*
 
 This field will control what the software does if all spot requests are not fulfilled (terminate itself, continue with only the instances that exist, or use on-demand instances to fill the rest of the quota).
+
+NB: Due to the way spot requests work and how their price has stabilized over the past few years, the option to continue is presently of minimal use, as it is incredibly unlikely that some requests will be filled and others will not when using one consistent price; the option is still supported to accommodate possible future changes to this status.
 
 
 instance-configuration
