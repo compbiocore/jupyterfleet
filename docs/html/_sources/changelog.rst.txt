@@ -6,19 +6,35 @@ Upcoming Features
 
 An option to create a cron job that will automatically kill all instances after X hours to avoid accidental overbilling
 
-An option to automatically push the directory to a Github repo (i.e. for use with Github Pages)
-
 More informative errors as beta testing reveals issues (ongoing)
-
-A way to purge the final line from the crontab upon running --kill if logging is enabled in the YAML
 
 An option to enable or disable OSX alerts, and to customize which alerts to get (all alerts, only startup alerts, or only critical failure alerts)
 
 Logs that summarize instance status in a concise, human-skimmable fashion
 
+git pull first before committing
+
 
 Beta Build
 ----------
+
+Version 0.9.1
+~~~~~~~~~~~~~
+
+Added instance blacklist functionality: preexisting instances will no longer be accessed by jupyter during activation or killed by --kill
+
+Version 0.9
+~~~~~~~~~~~~~
+
+Added a countdown timer for processes that take several minutes
+
+'--kill' flag now removes the crontab entry JupyterFleet generated
+
+'--kill' now creates a folder for the old files and moves them all there
+
+Added an option to automatically push the directory to a github repo (using cached git credentials)
+
+'--kill' now removes the autopushed directory (if it exists)
 
 Version 0.8.1
 ~~~~~~~~~~~~~

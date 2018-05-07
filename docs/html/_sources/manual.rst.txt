@@ -20,7 +20,8 @@ Logically speaking, the software implements the following steps:
 	a) If no key is added, exits with an error and instructs the user to request it be configured in the YAML or to do it themselves interactively
 5. Determines whether or not the --kill argument has been passed
 	a) If so, retrieves the instance IDs of all instances running in the default region and terminates them
-	[Check and see if there's a way to use the region explicitly listed in the YAML instead, which SHOULD be the same but could not be in edge cases]
+	b) Creates a timestamped folder and archives all temporary files (e.g. the user directory)
+	c) If logging is enabled in the YAML, removes the last line of crontab
 6. Requests instances in accordance with the parameters specified in the YAML file
 7. Waits for 180 seconds to allow all instances to spin up fully (no problem has yet been observed with this interval over hundreds of test instances; if you run into an issue with some instances not being fully instantiated, please report it so we can make it longer for the next build)
 8. Retrieves the IPs associated with the instances and writes them to a file
@@ -28,7 +29,8 @@ Logically speaking, the software implements the following steps:
 10. Loops over the list of IPs, SSHes into each instance, and activates Jupyter
 	a) Optionally, waits 120 seconds and then queries screen so the user can verify that the Jupyter screen is still running
 11. If logging is enabled, generates a script to query the screen status of each instance at the designated interval
-	a) Writes to crontab to cause this script to be run at said interval [NOT YET IMPLEMENTED]
+	a) Writes to crontab to cause this script to be run at said interval
 12. Creates a file wherein the IPs are listed with the Jupyter port appended, creating a clickable link to access each node
-13. Deletes temporary files
-14. Generates an HTML user directory mapping users to IPs if requested within the YAML [ONLY PARTIALLY IMPLEMENTED]
+13. Deletes intermediary files
+14. Generates an HTML user directory mapping users to IPs if requested within the YAML
+15. Optionally pushes the user directory to a designated github repository (for use with Github Pages)

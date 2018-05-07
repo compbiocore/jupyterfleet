@@ -20,11 +20,16 @@ instance-creation
 -----------------
 
 
+cloud-service
+~~~~~~~~~~~~~
 
-platform
-~~~~~~~~
+The 'cloud-service' option is used to designate which cloud service will be used to run Jupyter.  Only 'aws' is supported at this time, though others may be added in the future.
 
-The 'platform' option is used to specify the platform JupyterFleet itself is being run from - not the platform of the AMI.  This information is used to ensure the keyfile's permissions are correct and in a future build will also be used to configure logging in the event that you elect to enable logging, as platform determines the location of the crontab (system tool for running a task at a designated interval) configuration file.  Supported options are 'osx' for Mac OSX and 'linux' for Linux distributions.
+
+user-platform
+~~~~~~~~~~~~~~
+
+The 'user-platform' option is used to specify the platform JupyterFleet itself is being run from - not the platform of the AMI.  This information is used to ensure the keyfile's permissions are correct and in a future build will also be used to configure logging in the event that you elect to enable logging, as platform determines the location of the crontab (system tool for running a task at a designated interval) configuration file.  Supported options are 'osx' for Mac OSX and 'linux' for Linux distributions.
 
 
 
@@ -106,17 +111,30 @@ The amount of time in minutes to wait for the spot requests to be filled.  Based
 
 *fallback*
 
-This field will control what the software does if all spot requests are not fulfilled (terminate itself, continue with only the instances that exist, or use on-demand instances to fill the rest of the quota).
+This field controls whether or not the software will proceed to implement a fallback option in the event that the spot requests are not fulfilled.
 
 NB: Due to the way spot requests work and how their price has stabilized over the past few years, the option to continue is presently of minimal use, as it is incredibly unlikely that some requests will be filled and others will not when using one consistent price; the option is still supported to accommodate possible future changes to this status.
 
+*contingency-type*
+
+This field will control what the software does if all spot requests are not fulfilled (terminate itself, continue with only the instances that exist, or use on-demand instances to fill the rest of the quota).  Right now, 'on-demand' is the only supported option; it cancels the spot requests and substitutes on-demand instances.
+
+blacklist
+~~~~~~~~~
+
+This field is optional; if enabled, it will generate blacklist files.
+
+**blacklist-type**
+
+This field controls what type of blacklist is to be employed; at this time, only 'automatic' is a valid option.  With 'automatic' selected, JupyterFleet will create two blacklist files: one containing the instance IDs of all instances existing at the time the software is run, and one containing a list of IPs generated at the same time.  Then, future JupyterFleet operations will ignore the instances described therein; it will neither access the blacklisted IPs to run Juptyer nor include them in the directory, and it will not kill the instances with the blacklisted instance IDs.
+
+The purpose of this option is to ensure that running and then killing JupyterFleet will leave that region in the same state it was originally.  As a result, JupyterFleet now also supports a more flexible workshop setup protocol on the back end; for example, it is commonplace to manually create a single 'presenter instance' for the instructor that has resources in excess of those provided to students as a safeguard against edge-case notebook memory issues that would disrupt the lecture.  The use of a blacklist means that the software will not interact with and misconfigure such preexisting instances during workshop spin-up.
 
 instance-configuration
 ~~~~~~~~~~~~~~~~~~~~~~
 
 **directory-parameters**
 
-SOME OPTIONS NOT YET IMPLEMENTED
 
 *generate-directory*
 
@@ -129,6 +147,14 @@ The 'user-list' option is used to input a list of the users that will attend the
 *directory-type*
 
 The 'directory-type' option will be used to allow control over the nature of the directory.  This option is not currently used - at the moment, the only directory type that can be generated is the default type consisting of an html file where the first column is the IP link and the second column is the user's name.
+
+*push-repo*
+
+This optional field, if included, specifies which local git repo to place the user directory inside.  At this time, only local repos associated with a remote github repo are supported.  This path should indicate the root directory of the local repo; the subdirectory path is specified separately.  The local repository will then be pushed to the master branch of the remote repo using cached github credentials.
+
+*push-subfolder*
+
+This optional field specifies, relative to the 'push-repo' file path, where precisely to put the user directory.  In a default github pages / sphinx setup, this path will usually be 'docs/html/_static'.
 
 **verbosity**
 

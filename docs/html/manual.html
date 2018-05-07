@@ -83,8 +83,12 @@
 </li>
 <li><dl class="first docutils">
 <dt>Determines whether or not the –kill argument has been passed</dt>
-<dd>a) If so, retrieves the instance IDs of all instances running in the default region and terminates them
-[Check and see if there’s a way to use the region explicitly listed in the YAML instead, which SHOULD be the same but could not be in edge cases]</dd>
+<dd><ol class="first last loweralpha">
+<li>If so, retrieves the instance IDs of all instances running in the default region and terminates them</li>
+<li>Creates a timestamped folder and archives all temporary files (e.g. the user directory)</li>
+<li>If logging is enabled in the YAML, removes the last line of crontab</li>
+</ol>
+</dd>
 </dl>
 </li>
 <li>Requests instances in accordance with the parameters specified in the YAML file</li>
@@ -102,14 +106,15 @@
 <li><dl class="first docutils">
 <dt>If logging is enabled, generates a script to query the screen status of each instance at the designated interval</dt>
 <dd><ol class="first last loweralpha">
-<li>Writes to crontab to cause this script to be run at said interval [NOT YET IMPLEMENTED]</li>
+<li>Writes to crontab to cause this script to be run at said interval</li>
 </ol>
 </dd>
 </dl>
 </li>
 <li>Creates a file wherein the IPs are listed with the Jupyter port appended, creating a clickable link to access each node</li>
-<li>Deletes temporary files</li>
-<li>Generates an HTML user directory mapping users to IPs if requested within the YAML [ONLY PARTIALLY IMPLEMENTED]</li>
+<li>Deletes intermediary files</li>
+<li>Generates an HTML user directory mapping users to IPs if requested within the YAML</li>
+<li>Optionally pushes the user directory to a designated github repository (for use with Github Pages)</li>
 </ol>
 </div>
 </div>

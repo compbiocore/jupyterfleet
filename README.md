@@ -8,4 +8,4 @@ It is currently under active development (as of 3/1/18) and should not be used f
 
 For documentation, please see the Github Pages page associated with this repository:
 
-https://compbiocore.github.io/jupyterfleet/html/index.html
+[JupyterFleet Documentation on Github Pages](https://compbiocore.github.io/jupyterfleet/html/index.html)

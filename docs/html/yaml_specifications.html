@@ -56,9 +56,13 @@
 </div>
 <div class="section" id="instance-creation">
 <h2>instance-creation<a class="headerlink" href="#instance-creation" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="platform">
-<h3>platform<a class="headerlink" href="#platform" title="Permalink to this headline">¶</a></h3>
-<p>The ‘platform’ option is used to specify the platform JupyterFleet itself is being run from - not the platform of the AMI.  This information is used to ensure the keyfile’s permissions are correct and in a future build will also be used to configure logging in the event that you elect to enable logging, as platform determines the location of the crontab (system tool for running a task at a designated interval) configuration file.  Supported options are ‘osx’ for Mac OSX and ‘linux’ for Linux distributions.</p>
+<div class="section" id="cloud-service">
+<h3>cloud-service<a class="headerlink" href="#cloud-service" title="Permalink to this headline">¶</a></h3>
+<p>The ‘cloud-service’ option is used to designate which cloud service will be used to run Jupyter.  Only ‘aws’ is supported at this time, though others may be added in the future.</p>
+</div>
+<div class="section" id="user-platform">
+<h3>user-platform<a class="headerlink" href="#user-platform" title="Permalink to this headline">¶</a></h3>
+<p>The ‘user-platform’ option is used to specify the platform JupyterFleet itself is being run from - not the platform of the AMI.  This information is used to ensure the keyfile’s permissions are correct and in a future build will also be used to configure logging in the event that you elect to enable logging, as platform determines the location of the crontab (system tool for running a task at a designated interval) configuration file.  Supported options are ‘osx’ for Mac OSX and ‘linux’ for Linux distributions.</p>
 </div>
 <div class="section" id="aws-credentials">
 <h3>aws-credentials<a class="headerlink" href="#aws-credentials" title="Permalink to this headline">¶</a></h3>
@@ -100,19 +104,31 @@
 <p><em>wait-time</em></p>
 <p>The amount of time in minutes to wait for the spot requests to be filled.  Based on testing, 3 minutes is generally sufficient for 30 instances to be successfully requested, though a lower price should generally be accompanied by a longer wait time.  Once this time elapses, JupyterFleet will check to see if all requests have been filled and then take action based on the fallback options [not yet implemented].</p>
 <p><em>fallback</em></p>
-<p>This field will control what the software does if all spot requests are not fulfilled (terminate itself, continue with only the instances that exist, or use on-demand instances to fill the rest of the quota).</p>
+<p>This field controls whether or not the software will proceed to implement a fallback option in the event that the spot requests are not fulfilled.</p>
 <p>NB: Due to the way spot requests work and how their price has stabilized over the past few years, the option to continue is presently of minimal use, as it is incredibly unlikely that some requests will be filled and others will not when using one consistent price; the option is still supported to accommodate possible future changes to this status.</p>
+<p><em>contingency-type</em></p>
+<p>This field will control what the software does if all spot requests are not fulfilled (terminate itself, continue with only the instances that exist, or use on-demand instances to fill the rest of the quota).  Right now, ‘on-demand’ is the only supported option; it cancels the spot requests and substitutes on-demand instances.</p>
+</div>
+<div class="section" id="blacklist">
+<h3>blacklist<a class="headerlink" href="#blacklist" title="Permalink to this headline">¶</a></h3>
+<p>This field is optional; if enabled, it will generate blacklist files.</p>
+<p><strong>blacklist-type</strong></p>
+<p>This field controls what type of blacklist is to be employed; at this time, only ‘automatic’ is a valid option.  With ‘automatic’ selected, JupyterFleet will create two blacklist files: one containing the instance IDs of all instances existing at the time the software is run, and one containing a list of IPs generated at the same time.  Then, future JupyterFleet operations will ignore the instances described therein; it will neither access the blacklisted IPs to run Juptyer nor include them in the directory, and it will not kill the instances with the blacklisted instance IDs.</p>
+<p>The purpose of this option is to ensure that running and then killing JupyterFleet will leave that region in the same state it was originally.  As a result, JupyterFleet now also supports a more flexible workshop setup protocol on the back end; for example, it is commonplace to manually create a single ‘presenter instance’ for the instructor that has resources in excess of those provided to students as a safeguard against edge-case notebook memory issues that would disrupt the lecture.  The use of a blacklist means that the software will not interact with and misconfigure such preexisting instances during workshop spin-up.</p>
 </div>
 <div class="section" id="instance-configuration">
 <h3>instance-configuration<a class="headerlink" href="#instance-configuration" title="Permalink to this headline">¶</a></h3>
 <p><strong>directory-parameters</strong></p>
-<p>SOME OPTIONS NOT YET IMPLEMENTED</p>
 <p><em>generate-directory</em></p>
 <p>The ‘generate-directory’ option is used to control whether or not a directory should be generated.  The directory is (for the moment exclusively) an html file that associates each registrant’s name with an IP address in the form of a clickcable link (with the port appended, such that clicking the link opens the Jupyter landing screen).</p>
 <p><em>user-list</em></p>
 <p>The ‘user-list’ option is used to input a list of the users that will attend the workshop.  This option is currently implemented in an overly-specific manner (names must be the third column of a CSV and there must be a header, as this is the format of the one real dataset available to the developer) and should not be used.  Eventually, this option will require a list of names, each on its own line, with no header.</p>
 <p><em>directory-type</em></p>
 <p>The ‘directory-type’ option will be used to allow control over the nature of the directory.  This option is not currently used - at the moment, the only directory type that can be generated is the default type consisting of an html file where the first column is the IP link and the second column is the user’s name.</p>
+<p><em>push-repo</em></p>
+<p>This optional field, if included, specifies which local git repo to place the user directory inside.  At this time, only local repos associated with a remote github repo are supported.  This path should indicate the root directory of the local repo; the subdirectory path is specified separately.  The local repository will then be pushed to the master branch of the remote repo using cached github credentials.</p>
+<p><em>push-subfolder</em></p>
+<p>This optional field specifies, relative to the ‘push-repo’ file path, where precisely to put the user directory.  In a default github pages / sphinx setup, this path will usually be ‘docs/html/_static’.</p>
 <p><strong>verbosity</strong></p>
 <p>The ‘verbosity’ option is used to control whether or not the software outputs each IP before it connects to it to activate the Jupyter server.  It will probably do other things later as well.</p>
 <p><strong>logging</strong></p>
