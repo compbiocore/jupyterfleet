@@ -54,17 +54,18 @@
 </ul>
 </div>
 </div>
-<div class="section" id="purpose">
-<h1>Purpose<a class="headerlink" href="#purpose" title="Permalink to this headline">¶</a></h1>
-<p>This site serves to describe the ‘JupyterFleet’ software being developed by the Brown Computational Biology Core for the purpose of quick and easy Jupyter deployment on AWS.  The software is under active development so some features are missing and bugs are to be expected at this stage - <strong>it should not be run in its current form without consulting Andrew Leith</strong> (see contact information below).  JupyterFleet receives instructions from a YAML file and proceeds to instantiate AWS instances and deploy Jupyter notebooks on them with a single command.</p>
-<p>The software (in its provisional state) can be found at the following repository:</p>
-<p><a class="reference external" href="https://github.com/compbiocore/jupyterfleet">https://github.com/compbiocore/jupyterfleet</a></p>
-<p>Please note that this tool has not been tested on Windows; furthermore, no such testing on my part is planned at this time.  If you are interested in taking on this responsibility, excellent!  Please open an issue on Github and we can proceed from there.</p>
-<p>Pip and Conda installations will be available pending a production build.</p>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>JupyterFleet is a software utility developed by the Brown University Computational Biology Core for the purpose of quick and easy Jupyter deployment on AWS.  It brings together numerous tools and allows them to be configured from a single YAML parameter specification file that controls every aspect of the deployment process.  This configuration file is hierarchical and easily human-readable, ensuring that each step of the process will proceed as desired.</p>
+<p>JupyterFleet is intended primarily for use in conducting interactive workshops wherein a lecturer covers material written in a Jupyter notebook and students follow along in realtime on their own personal Jupyter instances, each running on its own AWS instance.  As each node is spawned from a single common Amazon Machine Image, each student will have access to an identical system in which they can interact with the lecture’s content, completely eliminating the issue of system-specific errors that has until now plagued interactive programming tutelage.</p>
+<p>When run, JupyterFleet begins by requesting EC2 nodes from Amazon in accordance with the parameters specified in the configuration YAML.  From there, it waits until these nodes have been provisioned, then activates Jupyter on each of them.  Next, it (optionally) creates a cron job to track the status of Jupyter on the EC2 nodes by writing an ad hoc bash script that is invoked by a crontab entry.  Finally, it generates an HTML directory that matches each name from a provided user list to an instance; this directory contains the Jupyter password and a clickable link to access each instance.</p>
+<p>In its current state, JupyterFleet is functional, albeit with some features still in development.  It has been tested in the real-world setting of several Computational Biology Core workshops and has performed to completion without any problems.  That said, it has (by necessity) only been tested with the single Amazon account our organization has access to, so if you encounter problems, please feel free to contact us so we can work together on a resolution.</p>
+<p>JupyterFleet is intended to be run on OSX or Linux.  Windows is not supported at this time, and no such support is planned in the near future.</p>
 </div>
 <div class="section" id="contact">
 <h1>Contact<a class="headerlink" href="#contact" title="Permalink to this headline">¶</a></h1>
-<p>For assistance, contact <a class="reference external" href="mailto:cbc-help&#37;&#52;&#48;brown&#46;edu">cbc-help<span>&#64;</span>brown<span>&#46;</span>edu</a> - this is our general help line, so please specify that your issue is with this site’s contents</p>
+<p>For assistance, if you are associated with Brown University, contact <a class="reference external" href="mailto:cbc-help&#37;&#52;&#48;brown&#46;edu">cbc-help<span>&#64;</span>brown<span>&#46;</span>edu</a> - this is our general help line, so please specify that your issue is with this site’s contents</p>
+<p>If you are not associated with Brown University, please open an issue on Github instead</p>
 </div>
 
 

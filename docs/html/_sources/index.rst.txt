@@ -3,6 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+
+
 JupyterFleet Documentation
 ==========================
 
@@ -16,23 +18,22 @@ JupyterFleet Documentation
 
    changelog
 
+Introduction
+============
 
-	
-Purpose
-=======
+JupyterFleet is a software utility developed by the Brown University Computational Biology Core for the purpose of quick and easy Jupyter deployment on AWS.  It brings together numerous tools and allows them to be configured from a single YAML parameter specification file that controls every aspect of the deployment process.  This configuration file is hierarchical and easily human-readable, ensuring that each step of the process will proceed as desired.
 
-This site serves to describe the 'JupyterFleet' software being developed by the Brown Computational Biology Core for the purpose of quick and easy Jupyter deployment on AWS.  The software is under active development so some features are missing and bugs are to be expected at this stage - **it should not be run in its current form without consulting Andrew Leith** (see contact information below).  JupyterFleet receives instructions from a YAML file and proceeds to instantiate AWS instances and deploy Jupyter notebooks on them with a single command.
+JupyterFleet is intended primarily for use in conducting interactive workshops wherein a lecturer covers material written in a Jupyter notebook and students follow along in realtime on their own personal Jupyter instances, each running on its own AWS instance.  As each node is spawned from a single common Amazon Machine Image, each student will have access to an identical system in which they can interact with the lecture's content, completely eliminating the issue of system-specific errors that has until now plagued interactive programming tutelage.
 
-The software (in its provisional state) can be found at the following repository:
+When run, JupyterFleet begins by requesting EC2 nodes from Amazon in accordance with the parameters specified in the configuration YAML.  From there, it waits until these nodes have been provisioned, then activates Jupyter on each of them.  Next, it (optionally) creates a cron job to track the status of Jupyter on the EC2 nodes by writing an ad hoc bash script that is invoked by a crontab entry.  Finally, it generates an HTML directory that matches each name from a provided user list to an instance; this directory contains the Jupyter password and a clickable link to access each instance.
 
-https://github.com/compbiocore/jupyterfleet
+In its current state, JupyterFleet is functional, albeit with some features still in development.  It has been tested in the real-world setting of several Computational Biology Core workshops and has performed to completion without any problems.  That said, it has (by necessity) only been tested with the single Amazon account our organization has access to, so if you encounter problems, please feel free to contact us so we can work together on a resolution.
 
-Please note that this tool has not been tested on Windows; furthermore, no such testing on my part is planned at this time.  If you are interested in taking on this responsibility, excellent!  Please open an issue on Github and we can proceed from there.
-
-Pip and Conda installations will be available pending a production build.
-
+JupyterFleet is intended to be run on OSX or Linux.  Windows is not supported at this time, and no such support is planned in the near future.
 
 Contact
 =======
 
-For assistance, contact cbc-help@brown.edu - this is our general help line, so please specify that your issue is with this site's contents
+For assistance, if you are associated with Brown University, contact cbc-help@brown.edu - this is our general help line, so please specify that your issue is with this site's contents
+
+If you are not associated with Brown University, please open an issue on Github instead
