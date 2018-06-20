@@ -1,0 +1,202 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>JupyterFleet Documentation &#8212; JupyterFleet</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="about/" />
+    <link rel="index" title="Index" href="genindex/" />
+    <link rel="search" title="Search" href="search/" />
+    <link rel="next" title="Jupyterfleet Manual" href="manual/" />
+   
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-115983496-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-115983496-2');
+</script>
+
+  
+  <link rel="alternate" type="application/atom+xml"  href="blog/atom.xml" title="JupyterFleet">
+  
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="jupyterfleet-documentation">
+<h1>JupyterFleet Documentation<a class="headerlink" href="#jupyterfleet-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="manual/">Jupyterfleet Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yaml_specifications/">YAML File Specifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog/">Changelog</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>JupyterFleet is a software utility developed by the Brown University Computational Biology Core for the purpose of quick and easy Jupyter deployment on AWS.  It brings together numerous tools and allows them to be configured from a single YAML parameter specification file that controls every aspect of the deployment process.  This configuration file is hierarchical and easily human-readable, ensuring that each step of the process will proceed as desired.</p>
+<p>JupyterFleet is intended primarily for use in conducting interactive workshops wherein a lecturer covers material written in a Jupyter notebook and students follow along in realtime on their own personal Jupyter instances, each running on its own AWS instance.  As each node is spawned from a single common Amazon Machine Image, each student will have access to an identical system in which they can interact with the lecture’s content, completely eliminating the issue of system-specific errors that has until now plagued interactive programming tutelage.</p>
+<p>When run, JupyterFleet begins by requesting EC2 nodes from Amazon in accordance with the parameters specified in the configuration YAML.  From there, it waits until these nodes have been provisioned, then activates Jupyter on each of them.  Next, it (optionally) creates a cron job to track the status of Jupyter on the EC2 nodes by writing an ad hoc bash script that is invoked by a crontab entry.  Finally, it generates an HTML directory that matches each name from a provided user list to an instance; this directory contains the Jupyter password and a clickable link to access each instance.</p>
+<p>In its current state, JupyterFleet is functional, albeit with some features still in development.  It has been tested in the real-world setting of several Computational Biology Core workshops and has performed to completion without any problems.  That said, it has (by necessity) only been tested with the single Amazon account our organization has access to, so if you encounter problems, please feel free to contact us so we can work together on a resolution.</p>
+<p>JupyterFleet is intended to be run on OSX or Linux.  Windows is not supported at this time, and no such support is planned in the near future.</p>
+</div>
+<div class="section" id="contact">
+<h1>Contact<a class="headerlink" href="#contact" title="Permalink to this headline">¶</a></h1>
+<p>For assistance, if you are associated with Brown University, contact <a class="reference external" href="mailto:cbc-help&#37;&#52;&#48;brown&#46;edu">cbc-help<span>&#64;</span>brown<span>&#46;</span>edu</a> - this is our general help line, so please specify that your issue is with this site’s contents</p>
+<p>If you are not associated with Brown University, please open an issue on Github instead</p>
+</div>
+
+  <div class="section">
+  
+  
+  </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="#">
+    <img class="logo" src="_static/brown_logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=compbiocore&repo=compbiocore&type=follow&count=true"
+  allowtransparency="true" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="manual/">Jupyterfleet Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yaml_specifications/">YAML File Specifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog/">Changelog</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://compbiocore.github.io/tutorials">Tutorials</a></li>
+    
+    <li class="toctree-l1"><a href="https://compbiocore.github.io/workshops">Workshops</a></li>
+    
+    <li class="toctree-l1"><a href="https://compbiocore.github.io">Main Page</a></li>
+    
+    <li class="toctree-l1"><a href="https://compbiocore.github.io/software">Software</a></li>
+    
+</ul>
+
+
+
+  <h3><a href="blog/">Recent Posts</a></h3>
+  <ul>
+    
+    
+      <li><a href="first-post/">20 June - First Post</a></li>
+    
+  </ul>
+
+  <h3><a href="blog/archive/">Archives</a></h3>
+  <ul>
+  
+    
+    <li><a href="blog/2018/">2018 (1)</a></li>
+    
+  
+  </ul>
+
+  <h3><a href="blog/tag/">Tags</a></h3>
+  <style type="text/css">
+    ul.ablog-cloud {list-style: none; overflow: auto;}
+    ul.ablog-cloud li {float: left; height: 20pt; line-height: 18pt; margin-right: 5px;}
+    ul.ablog-cloud a {text-decoration: none; vertical-align: middle;}
+    li.ablog-cloud-1{font-size: 80%;}
+    li.ablog-cloud-2{font-size: 95%;}
+    li.ablog-cloud-3{font-size: 110%;}
+    li.ablog-cloud-4{font-size: 125%;}
+    li.ablog-cloud-5{font-size: 140%;}
+  </style>
+  <ul class="ablog-cloud">
+    
+      
+      <li class="ablog-cloud ablog-cloud-3">
+        <a href="blog/tag/atag/">atag</a></li>
+      
+    
+  </ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Andrew Leith.
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-115983496-2']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    
+  </body>
+</html>

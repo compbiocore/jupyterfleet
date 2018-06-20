@@ -1,0 +1,253 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Jupyterfleet Manual &#8212; JupyterFleet</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../about/" />
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="YAML File Specifications" href="../yaml_specifications/" />
+    <link rel="prev" title="JupyterFleet Documentation" href="../" />
+   
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-115983496-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-115983496-2');
+</script>
+
+  
+  <link rel="alternate" type="application/atom+xml"  href="../blog/atom.xml" title="JupyterFleet">
+  
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="jupyterfleet-manual">
+<h1>Jupyterfleet Manual<a class="headerlink" href="#jupyterfleet-manual" title="Permalink to this headline">¶</a></h1>
+<p>Jupyterfleet currenly has two arguments, one required and one optional:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">y</span> <span class="o">--</span><span class="n">yaml</span><span class="p">:</span> <span class="n">REQUIRED</span> <span class="o">-</span> <span class="n">denotes</span> <span class="n">the</span> <span class="n">YAML</span> <span class="n">file</span> <span class="n">containing</span> <span class="n">the</span> <span class="n">instance</span> <span class="n">specifications</span> <span class="n">to</span> <span class="n">be</span> <span class="n">actualized</span>
+
+<span class="o">--</span><span class="n">kill</span><span class="p">:</span> <span class="n">OPTIONAL</span> <span class="o">-</span> <span class="n">kills</span> <span class="nb">all</span> <span class="n">instances</span> <span class="n">active</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">region</span> <span class="n">indicated</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">YAML</span> <span class="n">file</span>
+</pre></div>
+</div>
+<div class="section" id="logically-speaking-the-software-implements-the-following-steps">
+<h2>Logically speaking, the software implements the following steps:<a class="headerlink" href="#logically-speaking-the-software-implements-the-following-steps" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><dl class="first docutils">
+<dt>Determines if the AWS CLI is in the PATH</dt>
+<dd><ol class="first last loweralpha">
+<li>Exits with an error if it is not</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li>Parses the YAML into a dictionary object</li>
+<li><dl class="first docutils">
+<dt>Checks the YAML to see if the AWS CLI needs to be configured (no batch configuration mode exists so this step is implemented manually).</dt>
+<dd><ol class="first last loweralpha">
+<li>If so, writes the ‘default-region’ from the YAML to ~/.aws/config</li>
+<li>Writes the ‘key-id’ and ‘secret-key’ to ~/.aws/credentials</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Checks if the AWS CLI is not configured by looking for a valid access key</dt>
+<dd><ol class="first last loweralpha">
+<li>If no key is added, exits with an error and instructs the user to request it be configured in the YAML or to do it themselves interactively</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Determines whether or not the –kill argument has been passed</dt>
+<dd><ol class="first last loweralpha">
+<li>If so, retrieves the instance IDs of all instances running in the default region and terminates them</li>
+<li>Creates a timestamped folder and archives all temporary files (e.g. the user directory)</li>
+<li>If logging is enabled in the YAML, removes the last line of crontab</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li>Requests instances in accordance with the parameters specified in the YAML file</li>
+<li>Waits for 180 seconds to allow all instances to spin up fully (no problem has yet been observed with this interval over hundreds of test instances; if you run into an issue with some instances not being fully instantiated, please report it so we can make it longer for the next build)</li>
+<li>Retrieves the IPs associated with the instances and writes them to a file</li>
+<li>Ensures the keyfile has the correct permissions (400 i.e. -r——–)</li>
+<li><dl class="first docutils">
+<dt>Loops over the list of IPs, SSHes into each instance, and activates Jupyter</dt>
+<dd><ol class="first last loweralpha">
+<li>Optionally, waits 120 seconds and then queries screen so the user can verify that the Jupyter screen is still running</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>If logging is enabled, generates a script to query the screen status of each instance at the designated interval</dt>
+<dd><ol class="first last loweralpha">
+<li>Writes to crontab to cause this script to be run at said interval</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li>Creates a file wherein the IPs are listed with the Jupyter port appended, creating a clickable link to access each node</li>
+<li>Deletes intermediary files</li>
+<li>Generates an HTML user directory mapping users to IPs if requested within the YAML</li>
+<li>Optionally pushes the user directory to a designated github repository (for use with Github Pages)</li>
+</ol>
+</div>
+</div>
+
+  <div class="section">
+  
+  
+  </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../">
+    <img class="logo" src="../_static/brown_logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=compbiocore&repo=compbiocore&type=follow&count=true"
+  allowtransparency="true" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Jupyterfleet Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../yaml_specifications/">YAML File Specifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://compbiocore.github.io/tutorials">Tutorials</a></li>
+    
+    <li class="toctree-l1"><a href="https://compbiocore.github.io/workshops">Workshops</a></li>
+    
+    <li class="toctree-l1"><a href="https://compbiocore.github.io">Main Page</a></li>
+    
+    <li class="toctree-l1"><a href="https://compbiocore.github.io/software">Software</a></li>
+    
+</ul>
+
+
+
+  <h3><a href="../blog/">Recent Posts</a></h3>
+  <ul>
+    
+    
+      <li><a href="../first-post/">20 June - First Post</a></li>
+    
+  </ul>
+
+  <h3><a href="../blog/archive/">Archives</a></h3>
+  <ul>
+  
+    
+    <li><a href="../blog/2018/">2018 (1)</a></li>
+    
+  
+  </ul>
+
+  <h3><a href="../blog/tag/">Tags</a></h3>
+  <style type="text/css">
+    ul.ablog-cloud {list-style: none; overflow: auto;}
+    ul.ablog-cloud li {float: left; height: 20pt; line-height: 18pt; margin-right: 5px;}
+    ul.ablog-cloud a {text-decoration: none; vertical-align: middle;}
+    li.ablog-cloud-1{font-size: 80%;}
+    li.ablog-cloud-2{font-size: 95%;}
+    li.ablog-cloud-3{font-size: 110%;}
+    li.ablog-cloud-4{font-size: 125%;}
+    li.ablog-cloud-5{font-size: 140%;}
+  </style>
+  <ul class="ablog-cloud">
+    
+      
+      <li class="ablog-cloud ablog-cloud-3">
+        <a href="../blog/tag/atag/">atag</a></li>
+      
+    
+  </ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Andrew Leith.
+      
+      |
+      <a href="../_sources/manual.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-115983496-2']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    
+  </body>
+</html>

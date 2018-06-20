@@ -1,0 +1,36 @@
+Jupyterfleet Manual
+===================
+
+Jupyterfleet currenly has two arguments, one required and one optional::
+
+	-y --yaml: REQUIRED - denotes the YAML file containing the instance specifications to be actualized
+
+	--kill: OPTIONAL - kills all instances active in the region indicated in the YAML file
+
+Logically speaking, the software implements the following steps:
+----------------------------------------------------------------
+
+1. Determines if the AWS CLI is in the PATH
+	a) Exits with an error if it is not
+2. Parses the YAML into a dictionary object
+3. Checks the YAML to see if the AWS CLI needs to be configured (no batch configuration mode exists so this step is implemented manually).
+	a) If so, writes the 'default-region' from the YAML to ~/.aws/config
+	b) Writes the 'key-id' and 'secret-key' to ~/.aws/credentials
+4. Checks if the AWS CLI is not configured by looking for a valid access key
+	a) If no key is added, exits with an error and instructs the user to request it be configured in the YAML or to do it themselves interactively
+5. Determines whether or not the --kill argument has been passed
+	a) If so, retrieves the instance IDs of all instances running in the default region and terminates them
+	b) Creates a timestamped folder and archives all temporary files (e.g. the user directory)
+	c) If logging is enabled in the YAML, removes the last line of crontab
+6. Requests instances in accordance with the parameters specified in the YAML file
+7. Waits for 180 seconds to allow all instances to spin up fully (no problem has yet been observed with this interval over hundreds of test instances; if you run into an issue with some instances not being fully instantiated, please report it so we can make it longer for the next build)
+8. Retrieves the IPs associated with the instances and writes them to a file
+9. Ensures the keyfile has the correct permissions (400 i.e. -r--------)
+10. Loops over the list of IPs, SSHes into each instance, and activates Jupyter
+	a) Optionally, waits 120 seconds and then queries screen so the user can verify that the Jupyter screen is still running
+11. If logging is enabled, generates a script to query the screen status of each instance at the designated interval
+	a) Writes to crontab to cause this script to be run at said interval
+12. Creates a file wherein the IPs are listed with the Jupyter port appended, creating a clickable link to access each node
+13. Deletes intermediary files
+14. Generates an HTML user directory mapping users to IPs if requested within the YAML
+15. Optionally pushes the user directory to a designated github repository (for use with Github Pages)

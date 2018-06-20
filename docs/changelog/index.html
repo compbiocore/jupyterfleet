@@ -1,0 +1,276 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Changelog &#8212; JupyterFleet</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="author" title="About these documents" href="../about/" />
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="prev" title="YAML File Specifications" href="../yaml_specifications/" />
+   
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-115983496-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-115983496-2');
+</script>
+
+  
+  <link rel="alternate" type="application/atom+xml"  href="../blog/atom.xml" title="JupyterFleet">
+  
+  
+  <style type="text/css">
+    ul.ablog-archive {list-style: none; overflow: auto; margin-left: 0px}
+    ul.ablog-archive li {float: left; margin-right: 5px; font-size: 80%}
+    ul.postlist a {font-style: italic;}
+    ul.postlist-style-disc {list-style-type: disc;}
+    ul.postlist-style-none {list-style-type: none;}
+    ul.postlist-style-circle {list-style-type: circle;}
+  </style>
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="upcoming-features">
+<h2>Upcoming Features<a class="headerlink" href="#upcoming-features" title="Permalink to this headline">¶</a></h2>
+<p>An option to create a cron job that will automatically kill all instances after X hours to avoid accidental overbilling</p>
+<p>More informative errors as beta testing reveals issues (ongoing)</p>
+<p>An option to enable or disable OSX alerts, and to customize which alerts to get (all alerts, only startup alerts, or only critical failure alerts)</p>
+<p>Logs that summarize instance status in a concise, human-skimmable fashion</p>
+<p>git pull first before committing</p>
+</div>
+<div class="section" id="beta-build">
+<h2>Beta Build<a class="headerlink" href="#beta-build" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="version-0-9-1">
+<h3>Version 0.9.1<a class="headerlink" href="#version-0-9-1" title="Permalink to this headline">¶</a></h3>
+<p>Added instance blacklist functionality: preexisting instances will no longer be accessed by jupyter during activation or killed by –kill</p>
+</div>
+<div class="section" id="version-0-9">
+<h3>Version 0.9<a class="headerlink" href="#version-0-9" title="Permalink to this headline">¶</a></h3>
+<p>Added a countdown timer for processes that take several minutes</p>
+<p>‘–kill’ flag now removes the crontab entry JupyterFleet generated</p>
+<p>‘–kill’ now creates a folder for the old files and moves them all there</p>
+<p>Added an option to automatically push the directory to a github repo (using cached git credentials)</p>
+<p>‘–kill’ now removes the autopushed directory (if it exists)</p>
+</div>
+<div class="section" id="version-0-8-1">
+<h3>Version 0.8.1<a class="headerlink" href="#version-0-8-1" title="Permalink to this headline">¶</a></h3>
+<p>Logging crontab bugs fixed</p>
+<p>Logging script function partially overhauled (raw log file per iteration)</p>
+<p>Partial implementation of OSX alert function</p>
+</div>
+<div class="section" id="version-0-8">
+<h3>Version 0.8<a class="headerlink" href="#version-0-8" title="Permalink to this headline">¶</a></h3>
+<p>Added more robust fallback checking, auto-removal of spot requests if bid is too low</p>
+</div>
+<div class="section" id="version-0-7-1">
+<h3>Version 0.7.1<a class="headerlink" href="#version-0-7-1" title="Permalink to this headline">¶</a></h3>
+<p>Added error message for the case where the user list is missing</p>
+</div>
+<div class="section" id="version-0-7">
+<h3>Version 0.7<a class="headerlink" href="#version-0-7" title="Permalink to this headline">¶</a></h3>
+<p>Fixed critical issue with logging (correct directory is now checked for IPs)</p>
+</div>
+<div class="section" id="version-0-6-1">
+<h3>Version 0.6.1<a class="headerlink" href="#version-0-6-1" title="Permalink to this headline">¶</a></h3>
+<p>Fixed typo</p>
+<p>Added temporary fallback option for the case where bid is deemed so low that it is invalid</p>
+</div>
+<div class="section" id="version-0-6">
+<h3>Version 0.6<a class="headerlink" href="#version-0-6" title="Permalink to this headline">¶</a></h3>
+<p>Added a customizable wait time for spot instances</p>
+<p>Added a way to check if spot bid fails</p>
+<p>Began adding fallback options for the case where spot bid fails</p>
+<p>Fixed a bug regarding spot price parsing</p>
+<p>The user directory now shows the Jupyter password by default for ease of copying</p>
+<p>Added command line option ‘–skip’ to skip instance spin-up (proceeding directly to IP retrieval and key valdiation)</p>
+</div>
+<div class="section" id="version-0-5-3">
+<h3>Version 0.5.3<a class="headerlink" href="#version-0-5-3" title="Permalink to this headline">¶</a></h3>
+<p>Added __name__ check</p>
+</div>
+<div class="section" id="version-0-5-2">
+<h3>Version 0.5.2<a class="headerlink" href="#version-0-5-2" title="Permalink to this headline">¶</a></h3>
+<p>Implemented docstrings for functions - YAML documentation can be found on this site</p>
+</div>
+<div class="section" id="version-0-5-1">
+<h3>Version 0.5.1<a class="headerlink" href="#version-0-5-1" title="Permalink to this headline">¶</a></h3>
+<p>Code refactored for modularity</p>
+<p>Added option to use spot instances instead of on-demand instances</p>
+</div>
+<div class="section" id="version-0-5">
+<h3>Version 0.5<a class="headerlink" href="#version-0-5" title="Permalink to this headline">¶</a></h3>
+<p>Initial beta build designated as Version 0.5</p>
+</div>
+</div>
+<div class="section" id="alpha-build">
+<h2>Alpha Build<a class="headerlink" href="#alpha-build" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="version-1-4">
+<h3>Version 1.4<a class="headerlink" href="#version-1-4" title="Permalink to this headline">¶</a></h3>
+<p>Logging functionality implemented for OSX and Linux</p>
+<p>Alpha build feature-complete other than directory construction (to be addressed in beta)</p>
+</div>
+<div class="section" id="version-1-3">
+<h3>Version 1.3<a class="headerlink" href="#version-1-3" title="Permalink to this headline">¶</a></h3>
+<p>Added a more robust key permission check with platform-specificity and a custom error message</p>
+</div>
+<div class="section" id="version-1-2">
+<h3>Version 1.2<a class="headerlink" href="#version-1-2" title="Permalink to this headline">¶</a></h3>
+<p>Fixed critical bug with AWS CLI configuration file generation</p>
+</div>
+<div class="section" id="verson-1-1">
+<h3>Verson 1.1<a class="headerlink" href="#verson-1-1" title="Permalink to this headline">¶</a></h3>
+<p>Added changelog</p>
+<p>Added –kill argument to deactivate resources</p>
+<p>Suppressed superfluous output from various commands</p>
+<p>Added manual page</p>
+</div>
+</div>
+</div>
+
+  <div class="section">
+  
+  
+  </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../">
+    <img class="logo" src="../_static/brown_logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=compbiocore&repo=compbiocore&type=follow&count=true"
+  allowtransparency="true" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../manual/">Jupyterfleet Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../yaml_specifications/">YAML File Specifications</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://compbiocore.github.io/tutorials">Tutorials</a></li>
+    
+    <li class="toctree-l1"><a href="https://compbiocore.github.io/workshops">Workshops</a></li>
+    
+    <li class="toctree-l1"><a href="https://compbiocore.github.io">Main Page</a></li>
+    
+    <li class="toctree-l1"><a href="https://compbiocore.github.io/software">Software</a></li>
+    
+</ul>
+
+
+
+  <h3><a href="../blog/">Recent Posts</a></h3>
+  <ul>
+    
+    
+      <li><a href="../first-post/">20 June - First Post</a></li>
+    
+  </ul>
+
+  <h3><a href="../blog/archive/">Archives</a></h3>
+  <ul>
+  
+    
+    <li><a href="../blog/2018/">2018 (1)</a></li>
+    
+  
+  </ul>
+
+  <h3><a href="../blog/tag/">Tags</a></h3>
+  <style type="text/css">
+    ul.ablog-cloud {list-style: none; overflow: auto;}
+    ul.ablog-cloud li {float: left; height: 20pt; line-height: 18pt; margin-right: 5px;}
+    ul.ablog-cloud a {text-decoration: none; vertical-align: middle;}
+    li.ablog-cloud-1{font-size: 80%;}
+    li.ablog-cloud-2{font-size: 95%;}
+    li.ablog-cloud-3{font-size: 110%;}
+    li.ablog-cloud-4{font-size: 125%;}
+    li.ablog-cloud-5{font-size: 140%;}
+  </style>
+  <ul class="ablog-cloud">
+    
+      
+      <li class="ablog-cloud ablog-cloud-3">
+        <a href="../blog/tag/atag/">atag</a></li>
+      
+    
+  </ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Andrew Leith.
+      
+      |
+      <a href="../_sources/changelog.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-115983496-2']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    
+  </body>
+</html>
