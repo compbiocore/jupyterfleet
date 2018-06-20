@@ -7,6 +7,10 @@ Jupyterfleet currenly has two arguments, one required and one optional::
 
 	--kill: OPTIONAL - kills all instances active in the region indicated in the YAML file
 
+	--skip: OPTIONAL - skip the spin-up step and proceed directly to Jupyter activation
+
+	-h --help: OPTIONAL - show this message in the terminal
+
 Logically speaking, the software implements the following steps:
 ----------------------------------------------------------------
 
