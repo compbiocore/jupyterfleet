@@ -61,11 +61,7 @@ cli-parameters
 
 The 'ami-id' option is used to specify the AMI ID - *not* the AMI's name.  This ID can be found on the 'AMIs' page linked in the left toolbar on the main EC2 page.
 
-[EC2 screenshot with the AMIs page highlighted]
-
 Within that page, the AMI ID corresponding to your AMI of choice can be found in the column bearing that name.
-
-[AMIs page with the AMI ID column highlighted]
 
 **instance-type**
 
@@ -81,11 +77,9 @@ The 'instance-number' option is used to specify the number of instances - and th
 
 The 'security-group-id' option is used to designate which security group to attach to the instances.  As in the case of 'ami-id', this option uses the security group's ID, not its name.  The security group ID can be found on the 'Security Groups' page linked in the left toolbar on the main EC2 page.
 
-[EC2 screenshot with the Security Groups page highlighted]
 
 Within that page, the security group ID corresponding to your security group of choice can be found in the 'Group ID' column.
 
-[Security Groups page with the Group ID column highlighted]
 
 **keyfile**
 
