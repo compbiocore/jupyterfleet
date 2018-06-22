@@ -13,7 +13,7 @@ This tutorial will *not* address the creation of an AMI in any capacity, as Jupy
 
 A YAML file is basically a configuration file that uses an indented, hierarchical structure to make it both human-readable and machine-readable in equal measure.  It allows all options for an entire piece of software to be specified in one place without having to type out a ten-line command on the command line that is difficult to read and annoying to edit.
 
-YAML files can be formatted in a number of ways; the exact specifications for the YAML file that JupyterFleet can read are outlined below.  A sample YAML file can be found `here <https://raw.githubusercontent.com/compbiocore/jupyterfleet/master/example.yaml>`_ (with credentials redacted).  The entries that are feature descriptions in parentheses instead of values are not yet implemented so leaving them as is will not break anything.
+YAML files can be formatted in a number of ways; the exact specifications for the YAML file that JupyterFleet can read are outlined below.  **A sample YAML file can be found `here <https://raw.githubusercontent.com/compbiocore/jupyterfleet/master/example.yaml>`_ (with credentials redacted).**  The entries that are feature descriptions in parentheses instead of values are not yet implemented so leaving them as is will not break anything.
 
 
 instance-creation
