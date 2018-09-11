@@ -1,14 +1,7 @@
 # JupyterFleet Documentation
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Contents:
-
-   manual
-
-   yaml_specifications
-
-   changelog
+[![Docs](https://img.shields.io/badge/docs-stable-blue.svg?style=flat-square)](https://compbiocore.github.io/jupyterfleet)
+[![License](https://img.shields.io/aur/license/yaourt.svg)](https://raw.githubusercontent.com/compbiocore/jupyterfleet/master/LICENSE)
 
 # Introduction
 
