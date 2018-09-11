@@ -27,7 +27,7 @@ instance-creation:
             generate-directory  : TRUE
             user-list           : registration_tiny.csv
             push-repo           : /users/aleith/github_pages/cbc-workshop-directory
-            push-subfolder      : docs/html/_static
+            push-subfolder      : docs/assets
         verbosity                : FALSE
         logging:
            cron-interval         : 0
