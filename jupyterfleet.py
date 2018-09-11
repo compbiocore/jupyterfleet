@@ -6,12 +6,14 @@ import subprocess
 import yaml
 import time
 import sys
+import datetime
 
 #################################
 
 class cloud:
 	def __init__(self, platform="aws"):
 		self.platform = platform
+		
 
 	def createTable(self):
 		"""Create a textfile with pastable links to the Jupyter instances in the form 'ip:port'
@@ -60,6 +62,33 @@ class cloud:
 				subprocess.call([bashCommand], shell=True)
 			else:
 				print("\033[1m" + "Error: No user list found under the specified filename.  Skipping directory generation.  Instances are still active." + "\033[0m")
+
+			if "push-repo" in yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]:
+				subprocess.call(['cp user_directory.html ' + yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["push-repo"] + "/" + yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["push-subfolder"]], shell=True)
+				gitCommand = "git -C " + yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["push-repo"] + " add -A && git -C " + yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["push-repo"] + " commit -m \"JupyterFleet directory autopushed\" && git -C " + yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["push-repo"] + " push origin master"
+				subprocess.call([gitCommand], shell=True)
+
+
+
+	def timer(self, length):
+		"""Creates an in-line countdown timer for long processes.  The countdown will be displayed at an interval determined by the total time.
+		"""
+		totalTime = length
+		if totalTime >= 600:
+			interval = 60
+		elif totalTime > 180:
+			interval = 30
+		else:
+			interval = 15
+		sys.stdout.write('Execution will resume in: ' + str(totalTime) + ' ')
+		sys.stdout.flush()
+		for i in xrange(totalTime-interval,0-interval,-interval):
+    			time.sleep(interval)
+    			sys.stdout.write(str(i) + ' ')
+    			sys.stdout.flush()
+		sys.stdout.write('\n')
+
+
 
 
 class aws(cloud):
@@ -114,6 +143,21 @@ class aws(cloud):
 		if missingConf == True:
 			sys.exit("\033[1m" + "AWS CLI is not configured.  Please ensure the YAML file includes your AWS credentials." + "\033[0m")
 
+
+	def prepareBlacklist(self):
+		"""Blacklist all extant instances (if requested in the YAML)
+
+		Also generates a list of all existing EC2 ids for use with kill()
+		"""
+		if(yamlPar["instance-creation"]["blacklist"]["blacklist-type"] == "automatic"):
+			subprocess.call(['aws ec2 describe-instances   --query "Reservations[*].Instances[*].PublicIpAddress"   --output=text > blacklist.txt'], shell=True)
+			subprocess.call(['tr "\t" "\n" < blacklist.txt > blacklist_newline.txt'], shell=True)
+			subprocess.call(["rm blacklist.txt"], shell=True)
+
+			subprocess.call(["aws ec2 describe-instances | grep InstanceId | awk \'{print $2}\' | awk -F\'\"\' \'{ print $2 }\' > preexisting_ids.txt"], shell=True)
+
+
+
 	def requestInstances(self):
 		"""Request on-demand EC2 instances of the type specified in the YAML
 
@@ -125,7 +169,8 @@ class aws(cloud):
 		print "Instances have been successfully requested and are presently instantiating."
 		print "Execution will now pause for 3 minutes to be sure all instances are active."
 		print "Their status can be viewed in the web console at this point."
-		time.sleep(180)
+		run.timer(180)
+		#time.sleep(180)
 
 	def spotRequest(self):
 		"""Request spot EC2 instances of the type specified in the YAML
@@ -141,7 +186,9 @@ class aws(cloud):
 			print "Spot instances have been successfully requested and are presently instantiating."
 			print "Execution will now pause for " + str(yamlPar["instance-creation"]["cli-parameters"]["spot"]["wait-time"]) + " minutes to be sure all instances are active."
 			print "Their status can be viewed in the web console at this point."
-			time.sleep(int(yamlPar["instance-creation"]["cli-parameters"]["spot"]["wait-time"]) * 60)
+			#time.sleep(int(yamlPar["instance-creation"]["cli-parameters"]["spot"]["wait-time"]) * 60)
+			run.timer(int(yamlPar["instance-creation"]["cli-parameters"]["spot"]["wait-time"]) * 60)
+
 			if yamlPar["instance-creation"]["cli-parameters"]["spot"]["fallback"] == True:
 				lengthBase = int(yamlPar["instance-creation"]["cli-parameters"]["instance-number"])
 				lengthCheck = int(subprocess.check_output(['aws ec2 describe-spot-instance-requests --filters Name=state,Values=active | grep "Your spot request is fulfilled." | wc -l'], shell=True))
@@ -184,17 +231,61 @@ class aws(cloud):
 		"""Kill all instances in the default region"""
 
 		# TODO: MAKE THIS FUNCTION MORE CONTROLLABLE, WITH TEXT VALIDATION INSTEAD OF WAITING, EXITING WITHOUT KILLING OTHERWISE
-		# REMOVE LAST LINE FROM CRONTAB, DELETE CRONTAB-RELATED SCRIPT
 		if arguments.kill:
 			print "All instances in the region specified in the YAML file will now be deactivated.  Execution will pause for 30 seconds to give you a chance to cancel (ctrl+c) if that is not desired.  Once that time elapses, this operation is irreversible."
 			time.sleep(30)
-			subprocess.call(['aws ec2 describe-instances | grep InstanceId | awk \'{print $2}\' | awk -F\'\"\' \'{ print $2 }\' | xargs aws ec2 terminate-instances --instance-ids'], shell=True, stdout=subprocess.PIPE)
+			subprocess.call(['aws ec2 describe-instances | grep InstanceId | awk \'{print $2}\' | awk -F\'\"\' \'{ print $2 }\' > all_instance_ids.txt'], shell=True)
+			idFile = open("all_instance_ids.txt", "r")
+			idList = idFile.readlines()
+
+			filteredFile = open("ids_to_delete.txt","w") 
+			for i in idList:
+				subprocessCommand = "grep -c \'" + str(i).strip() + "\' preexisting_ids.txt"
+				print(subprocessCommand)
+				try:
+			   		output = subprocess.check_output([subprocessCommand], shell=True)
+			   		#print("BLACKLISTED")
+				except subprocess.CalledProcessError:                                                                                                   
+			   		#print("OK")
+			   		filteredFile.write(i)
+			filteredFile.close()
+			idFile.close()
+			subprocess.call(["rm all_instance_ids.txt preexisting_ids.txt"], shell=True)
+			subprocess.call(["cat ids_to_delete.txt | xargs aws ec2 terminate-instances --instance-ids"], shell=True)
+			#subprocess.call(['aws ec2 describe-instances | grep InstanceId | awk \'{print $2}\' | awk -F\'\"\' \'{ print $2 }\' | xargs aws ec2 terminate-instances --instance-ids'], shell=True, stdout=subprocess.PIPE)
+			# terminate instances
+			
+			print "Archiving all intermediary files..."
+			currentTime = datetime.datetime.now().strftime(("%Y-%m-%d_%H:%M"))
+			archivePath = 'jupyterfleet_archive_' + str(currentTime)
+			subprocess.call(['mkdir ' + archivePath], shell=True)
+			subprocess.call(['mv ips_newline* ' + archivePath], shell=True)
+			subprocess.call(['mv cron_screen_log.txt ' + archivePath], shell=True)
+			subprocess.call(['mv blacklist_newline.txt ' + archivePath], shell=True)
+			subprocess.call(['mv ids_to_delete.txt ' + archivePath], shell=True)
+			if os.path.exists('user_directory.html'):
+				subprocess.call(['mv user_directory.html ' + archivePath], shell=True)
+				# if a directory was generated, archive it
+			if yamlPar["instance-creation"]["instance-configuration"]["logging"]["cron-interval"] > 0:
+				subprocess.call(['crontab -l | sed \$d | crontab -'], shell=True)
+				# remove the last line of crontab if logging was enabled, since the logging command was added to the bottom of crontab
+				subprocess.call(['mv screen_check.sh ' + archivePath], shell=True)
+				# archive cron script
+
+			if "push-repo" in yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]:
+				# if a user directory was automatically pushed, delete it from github
+				gitCommand = "rm " + yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["push-repo"] + "/" + yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["push-subfolder"] + "/user_directory.html && git -C " + yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["push-repo"] + " add -A && git -C " + yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["push-repo"] + " commit -m \"JupyterFleet directory autoremoved\" && git -C " + yamlPar["instance-creation"]["instance-configuration"]["directory-parameters"]["push-repo"] + " push origin master"
+				subprocess.call([gitCommand], shell=True)
+
+
 			sys.exit("Resources are now being deactivated.  Execution will now terminate.  Spin-down status can be monitored from the console and will take approximately one minute.")
 
 	def getIPs(self):
 		"""Retrieve the IPs for each instance and store them in a file, with each IP on a separate line
 
-		IPs will be retrieved for all active instances in the default region, including any previously extant
+		IPs will be retrieved for all active instances in the default region, by default including any previously extant
+
+		Options permit the use of a blacklist, which can either be 'automatic' (all preexisting instances) or manual (IPs designated in a file)
 
 		Uses file(s):
 			None
@@ -210,6 +301,38 @@ class aws(cloud):
 		subprocess.call(['aws ec2 describe-instances   --query "Reservations[*].Instances[*].PublicIpAddress"   --output=text > ips.txt'], shell=True)
 		subprocess.call(['tr "\t" "\n" < ips.txt > ips_newline.txt'], shell=True)
 		# split the raw output onto separate lines
+
+
+
+		ipFile = open("ips_newline.txt", "r")
+		ipList = ipFile.readlines()
+
+		filteredFile = open("filtered_ips_newline.txt","w") 
+		for i in ipList:
+			subprocessCommand = "grep -c \'" + str(i).strip() + "\' blacklist_newline.txt"
+			#print(subprocessCommand)
+			try:
+		   		output = subprocess.check_output([subprocessCommand], shell=True)
+		   		#print("BLACKLISTED")
+			except subprocess.CalledProcessError:                                                                                                   
+		   		#print("OK")
+		   		filteredFile.write(i)
+		# compare each IP to the blacklist, and save it if it's not in the blacklist
+		filteredFile.close()
+		ipFile.close()
+		subprocess.call(["mv filtered_ips_newline.txt ips_newline.txt"], shell=True)		
+
+		#if(yamlPar["instance-creation"]["blacklist"]["blacklist-type"] == "automatic"):
+			# if a blacklist should be created automatically, generate that empty file
+			#blacklistFile = open("blacklist_file.txt", "r")
+		#else:
+			#blacklistFile = open(yamlPar["instance-creation"]["blacklist"]["blacklist-file"], "r")
+
+
+
+
+
+
 
 	def manageKey(self):
 		"""Process the AWS keyfile and be sure it is usable
@@ -390,6 +513,8 @@ if  __name__ == "__main__":
 		run.configureCLI()
 		run.checkConfig()
 		run.kill()
+		if "blacklist" in yamlPar["instance-creation"]:
+			run.prepareBlacklist()
 		if "spot" in yamlPar["instance-creation"]["cli-parameters"]:
 			run.spotRequest()
 		else:
