@@ -1,0 +1,6 @@
+repo:             jupyterfleet
+site_name:        JupyterFleet
+site_author:      Andrew Leith
+site_description: JupyterFleet - Software for Automating Jupyter Deployment on AWS
+site_url:         https://compbiocore.github.io/
+type:             software    # required. choose one of [software, tutorial, workshop, documentation]
