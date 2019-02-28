@@ -165,7 +165,7 @@ class aws(cloud):
 
 		"""
 		instanceCreate = 'aws ec2 run-instances --image-id ' + yamlPar["instance-creation"]["cli-parameters"]["ami-id"] + ' --count ' + str(yamlPar["instance-creation"]["cli-parameters"]["instance-number"]) + ' --instance-type ' + yamlPar["instance-creation"]["cli-parameters"]["instance-type"] + ' --key-name ' + yamlPar["instance-creation"]["cli-parameters"]["keyfile"]["key-name"] + ' --security-group-ids ' + yamlPar["instance-creation"]["cli-parameters"]["security-group-id"]
-		subprocess.Popen([instanceCreate], shell=True, stdout=subprocess.PIPE)
+		subprocess.call([instanceCreate], shell=True, stdout=subprocess.PIPE)
 		print "Instances have been successfully requested and are presently instantiating."
 		print "Execution will now pause for 3 minutes to be sure all instances are active."
 		print "Their status can be viewed in the web console at this point."
