@@ -1,0 +1,653 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="JupyterFleet">
+      
+      
+        <link rel="canonical" href="https://compbiocore.github.io/yaml_specifications/">
+      
+      
+        <meta name="author" content="Andrew Leith">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0, mkdocs-material-3.0.3">
+    
+    
+      
+        <title>YAML Specifications - Computational Biology Core - Brown University</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application.451f80e5.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.22915126.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#546e7a">
+      
+    
+    
+      <script src="../assets/javascripts/modernizr.1aa3b519.js"></script>
+    
+    
+      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+      
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../assets/fonts/material-icons.css">
+    
+      <link rel="stylesheet" href="../styles/dark_mode.css">
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448"
+    viewBox="0 0 416 448" id="__github">
+  <path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19-18.125
+        8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19 18.125-8.5
+        18.125 8.5 10.75 19 3.125 20.5zM320 304q0 10-3.125 20.5t-10.75
+        19-18.125 8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19
+        18.125-8.5 18.125 8.5 10.75 19 3.125 20.5zM360
+        304q0-30-17.25-51t-46.75-21q-10.25 0-48.75 5.25-17.75 2.75-39.25
+        2.75t-39.25-2.75q-38-5.25-48.75-5.25-29.5 0-46.75 21t-17.25 51q0 22 8
+        38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0
+        37.25-1.75t35-7.375 30.5-15 20.25-25.75 8-38.375zM416 260q0 51.75-15.25
+        82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5-41.75
+        1.125q-19.5 0-35.5-0.75t-36.875-3.125-38.125-7.5-34.25-12.875-30.25-20.25-21.5-28.75q-15.5-30.75-15.5-82.75
+        0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25
+        30.875q36.75-8.75 77.25-8.75 37 0 70 8 26.25-20.5
+        46.75-30.25t47.25-9.75q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34
+        99.5z" />
+</svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="../#yaml-file-specifications" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://compbiocore.github.io/" title="Computational Biology Core - Brown University" class="md-header-nav__button md-logo">
+          
+            <img src="../images/cbc-logo.svg" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            
+              <span class="md-header-nav__topic">
+                Computational Biology Core - Brown University
+              </span>
+              <span class="md-header-nav__topic">
+                YAML Specifications
+              </span>
+            
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          
+            <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+            
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+          
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/compbiocore/jupyterfleet/" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#__github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      GitHub
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://compbiocore.github.io/" title="Computational Biology Core - Brown University" class="md-nav__button md-logo">
+      
+        <img src="../images/cbc-logo.svg" width="48" height="48">
+      
+    </a>
+    Computational Biology Core - Brown University
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/compbiocore/jupyterfleet/" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#__github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      GitHub
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../manual/" title="Manual" class="md-nav__link">
+      Manual
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        YAML Specifications
+      </label>
+    
+    <a href="./" title="YAML Specifications" class="md-nav__link md-nav__link--active">
+      YAML Specifications
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction-to-the-yaml-format" title="Introduction to the YAML format" class="md-nav__link">
+    Introduction to the YAML format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instance-creation" title="instance-creation" class="md-nav__link">
+    instance-creation
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cloud-service" title="cloud-service" class="md-nav__link">
+    cloud-service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-platform" title="user-platform" class="md-nav__link">
+    user-platform
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-credentials" title="aws-credentials" class="md-nav__link">
+    aws-credentials
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cli-parameters" title="cli-parameters" class="md-nav__link">
+    cli-parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blacklist" title="blacklist" class="md-nav__link">
+    blacklist
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instance-configuration" title="instance-configuration" class="md-nav__link">
+    instance-configuration
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../changelog/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction-to-the-yaml-format" title="Introduction to the YAML format" class="md-nav__link">
+    Introduction to the YAML format
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instance-creation" title="instance-creation" class="md-nav__link">
+    instance-creation
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cloud-service" title="cloud-service" class="md-nav__link">
+    cloud-service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-platform" title="user-platform" class="md-nav__link">
+    user-platform
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-credentials" title="aws-credentials" class="md-nav__link">
+    aws-credentials
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cli-parameters" title="cli-parameters" class="md-nav__link">
+    cli-parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blacklist" title="blacklist" class="md-nav__link">
+    blacklist
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instance-configuration" title="instance-configuration" class="md-nav__link">
+    instance-configuration
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/compbiocore/jupyterfleet/edit/master/docs/yaml_specifications.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="yaml-file-specifications">YAML File Specifications</h1>
+<h3 id="introduction-to-the-yaml-format">Introduction to the YAML format</h3>
+<p>This tutorial concerns the creation of a YAML file to be read by JupyterFleet.  This file will specify all the parameters used to interact with AWS, as well as optionally aid in debugging and instance monitoring.</p>
+<p>This tutorial will <em>not</em> address the creation of an AMI in any capacity, as JupyterFleet is designed to deploy an existing AMI.  If you are affiliated with Brown and need assistance in creating an AMI, please contact our help line.</p>
+<p><strong>What is a YAML file?</strong></p>
+<p>A YAML file is basically a configuration file that uses an indented, hierarchical structure to make it both human-readable and machine-readable in equal measure.  It allows all options for an entire piece of software to be specified in one place without having to type out a ten-line command on the command line that is difficult to read and annoying to edit.</p>
+<p>YAML files can be formatted in a number of ways; the exact specifications for the YAML file that JupyterFleet can read are outlined below.  <strong>A sample YAML file can be found</strong> <code>here &lt;https://raw.githubusercontent.com/compbiocore/jupyterfleet/master/example.yaml&gt;</code>_ <strong>(with credentials redacted).</strong>  The entries that are feature descriptions in parentheses instead of values are not yet implemented so leaving them as is will not break anything.</p>
+<h3 id="instance-creation">instance-creation</h3>
+<h4 id="cloud-service">cloud-service</h4>
+<p>The 'cloud-service' option is used to designate which cloud service will be used to run Jupyter.  Only 'aws' is supported at this time, though others may be added in the future.</p>
+<h4 id="user-platform">user-platform</h4>
+<p>The 'user-platform' option is used to specify the platform JupyterFleet itself is being run from - not the platform of the AMI.  This information is used to ensure the keyfile's permissions are correct and in a future build will also be used to configure logging in the event that you elect to enable logging, as platform determines the location of the crontab (system tool for running a task at a designated interval) configuration file.  Supported options are 'osx' for Mac OSX and 'linux' for Linux distributions.</p>
+<h4 id="aws-credentials">aws-credentials</h4>
+<p><strong>generate-configuration</strong></p>
+<p>The 'generate-configuration' option is used to designate whether JupyterFleet should configure the AWS Command Line Interface (CLI).  The CLI must be configured to use JupyterFleet, but this option can be set to FALSE if you have already configured the tool yourself.  Importantly, the default region must be set to the region in which the instances are to be deployed (and the AMI must be in that region too).  The rest of the options under 'aws-credentials' will only be used if 'generate-configuration' is set to TRUE.</p>
+<p><strong>default-region</strong></p>
+<p>The 'default-region' option is used to specify the region to be used in deploying the instances.  The AMI to be used must be available in this region.</p>
+<p><strong>key-id</strong></p>
+<p>The 'key-id' option is used to specify your AWS key ID.</p>
+<p><strong>secrey-key</strong></p>
+<p>The 'secret-key' option is used to specify your AWS key ID.</p>
+<h4 id="cli-parameters">cli-parameters</h4>
+<p><strong>ami-id</strong></p>
+<p>The 'ami-id' option is used to specify the AMI ID - <em>not</em> the AMI's name.  This ID can be found on the 'AMIs' page linked in the left toolbar on the main EC2 page.</p>
+<p>Within that page, the AMI ID corresponding to your AMI of choice can be found in the column bearing that name.</p>
+<p><strong>instance-type</strong></p>
+<p>The 'instance-type' option is used to designate what type of EC2 instance to use.  A list of available instance types and their capabilities can be found on Amazon's <code>EC2 page &lt;https://aws.amazon.com/ec2/instance-types/&gt;</code>_.  We have found that the 't2.medium' instance type affords the best balance of cost and performance for an interactive workshop (as jobs that require significant memory will take too long to be demonstrated in this format), though the choice will necessarily be dictated by use case.</p>
+<p>Please be mindful of the fact that each instance type is governed by its own instance limit, and be sure that the instance you've selected has a limit greater than or equal to the number of instances you plan to deploy.</p>
+<p><strong>instance-number</strong></p>
+<p>The 'instance-number' option is used to specify the number of instances - and thereby the number of notebooks - to instantiate.</p>
+<p><strong>security-group-id</strong></p>
+<p>The 'security-group-id' option is used to designate which security group to attach to the instances.  As in the case of 'ami-id', this option uses the security group's ID, not its name.  The security group ID can be found on the 'Security Groups' page linked in the left toolbar on the main EC2 page.</p>
+<p>Within that page, the security group ID corresponding to your security group of choice can be found in the 'Group ID' column.</p>
+<p><strong>keyfile</strong></p>
+<p><em>key-path</em></p>
+<p>The 'key-path' option is used to designate the location of the folder containing the .pem keyfile used to connect to AWS instances.  A keypair must first be created; this task can be performed by going into the 'Keypairs' page using the left toolbar on the main EC2 page and then selecting 'Create Key Pair'.  More details about creating keypairs is beyond the scope of this tutorial and can be found in the AWS documentation.</p>
+<p>By convention, keyfiles are stored in the '.ssh' hidden subdirectory of the user's home directory i.e. ~/.ssh - this option should specify the directory's path not including the name of the keyfile itself, which is specified immediately below.</p>
+<p><em>key-name</em></p>
+<p>The 'key-name' option is used to designate the name of the keyfile itself.</p>
+<p><strong>spot</strong> (this field and all subfields are optional)</p>
+<p><em>spot-price</em></p>
+<p>The price to bid for a spot instance.  If this field is included in the YAML, JupyterFleet will submit spot requests; if not, it will use standard on-demand instances.  Please ensure that your bid is a reasonable amount - execution will pause for five minutes to give the requests time to procure, but if the bid is too low the software will then break.  It is a good idea to check the spot price history for your desired instance type to inform your bid value. </p>
+<p><em>wait-time</em></p>
+<p>The amount of time in minutes to wait for the spot requests to be filled.  Based on testing, 3 minutes is generally sufficient for 30 instances to be successfully requested, though a lower price should generally be accompanied by a longer wait time.  Once this time elapses, JupyterFleet will check to see if all requests have been filled and then take action based on the fallback options [not yet implemented].</p>
+<p><em>fallback</em></p>
+<p>This field controls whether or not the software will proceed to implement a fallback option in the event that the spot requests are not fulfilled.</p>
+<p>NB: Due to the way spot requests work and how their price has stabilized over the past few years, the option to continue is presently of minimal use, as it is incredibly unlikely that some requests will be filled and others will not when using one consistent price; the option is still supported to accommodate possible future changes to this status.</p>
+<p><em>contingency-type</em></p>
+<p>This field will control what the software does if all spot requests are not fulfilled (terminate itself, continue with only the instances that exist, or use on-demand instances to fill the rest of the quota).  Right now, 'on-demand' is the only supported option; it cancels the spot requests and substitutes on-demand instances.</p>
+<h4 id="blacklist">blacklist</h4>
+<p>This field is optional; if enabled, it will generate blacklist files.</p>
+<p><strong>blacklist-type</strong></p>
+<p>This field controls what type of blacklist is to be employed; at this time, only 'automatic' is a valid option.  With 'automatic' selected, JupyterFleet will create two blacklist files: one containing the instance IDs of all instances existing at the time the software is run, and one containing a list of IPs generated at the same time.  Then, future JupyterFleet operations will ignore the instances described therein; it will neither access the blacklisted IPs to run Juptyer nor include them in the directory, and it will not kill the instances with the blacklisted instance IDs.</p>
+<p>The purpose of this option is to ensure that running and then killing JupyterFleet will leave that region in the same state it was originally.  As a result, JupyterFleet now also supports a more flexible workshop setup protocol on the back end; for example, it is commonplace to manually create a single 'presenter instance' for the instructor that has resources in excess of those provided to students as a safeguard against edge-case notebook memory issues that would disrupt the lecture.  The use of a blacklist means that the software will not interact with and misconfigure such preexisting instances during workshop spin-up.</p>
+<h4 id="instance-configuration">instance-configuration</h4>
+<p><strong>directory-parameters</strong></p>
+<p><em>generate-directory</em></p>
+<p>The 'generate-directory' option is used to control whether or not a directory should be generated.  The directory is (for the moment exclusively) an html file that associates each registrant's name with an IP address in the form of a clickcable link (with the port appended, such that clicking the link opens the Jupyter landing screen).</p>
+<p><em>user-list</em></p>
+<p>The 'user-list' option is used to input a list of the users that will attend the workshop.  This option is currently implemented in an overly-specific manner (names must be the third column of a CSV and there must be a header, as this is the format of the one real dataset available to the developer) and should not be used.  Eventually, this option will require a list of names, each on its own line, with no header.</p>
+<p><em>directory-type</em></p>
+<p>The 'directory-type' option will be used to allow control over the nature of the directory.  This option is not currently used - at the moment, the only directory type that can be generated is the default type consisting of an html file where the first column is the IP link and the second column is the user's name.</p>
+<p><em>push-repo</em></p>
+<p>This optional field, if included, specifies which local git repo to place the user directory inside.  At this time, only local repos associated with a remote github repo are supported.  This path should indicate the root directory of the local repo; the subdirectory path is specified separately.  The local repository will then be pushed to the master branch of the remote repo using cached github credentials.</p>
+<p><em>push-subfolder</em></p>
+<p>This optional field specifies, relative to the 'push-repo' file path, where precisely to put the user directory.  In a default github pages / sphinx setup, this path will usually be 'docs/html/_static'.</p>
+<p><strong>verbosity</strong></p>
+<p>The 'verbosity' option is used to control whether or not the software outputs each IP before it connects to it to activate the Jupyter server.  It will probably do other things later as well.</p>
+<p><strong>logging</strong></p>
+<p><em>cron-interval</em></p>
+<p>The 'cron-interval' option is used to determine how frequently, in minutes, the instances will be checked and their screen statuses logged.  Setting this interval to 0 will disable logging entirely.</p>
+<p><em>log-directory</em></p>
+<p>The 'log-directory' option is used to designate where the log file will be written.  Setting the option '.' will cause the logs to be placed in the current directory.</p>
+<p><em>wait</em></p>
+<p>The 'wait' option is used to force the software to wait for 120 seconds after activating Jupyter and then check the status of screens on that instance; this test is conducted on every instance.  If there is an error with the activation of the Jupyter server, the screen will almost certainly die during that interval, meaning that no screens will be visible when the query is executed.  If no screens are visible, there is likely a problem with the AMI that must be addressed (or a misspecification of the 'conda-path' option described below).  <em>This option is intended for small-scale testing purposes only, as it adds two minutes to the configuration of every instance, increasing the spin-up time by hours for a full-scale deployment.</em></p>
+<p><strong>username</strong></p>
+<p>The 'username' option is used to specify the username of the root user on the AMI (the username you used to login to the instance you used to generate the AMI).  This value will depend entirely on the AMI you have created (e.g. any AMI built from the default Ubuntu base image will be 'ubuntu').</p>
+<p><strong>conda-path</strong></p>
+<p>The 'conda-path' option is used to specify the full filepath to the conda binary folder within the AMI.  If this path is misspecified, attempts to activate the Jupyter server will fail and the screen will die - you can monitor for this problem by enabling the 'wait' option under 'logging' as described above.</p>
+<p><strong>jupyter-port</strong></p>
+<p>The 'jupyter-port' option is used to specify which port the Jupyter server is exposed on (as specified in the Jupyter configuration file on the AMI).  This option is used to generate the list of instance links and the user directory and does not ameliorate a misconfigured security group (i.e. even if 'jupyter-port' is listed correctly, Jupyter will be inaccessible if the wrong security group is applied to the instances).  Likewise, if the security group is correct but 'jupyter-port' is wrong, Jupyter itself will work fine but the directory will be populated by dead links.</p>
+<p><strong>jupyter-password</strong></p>
+<p>The 'jupyter-password' option is used to specify the password requried to access the Jupyter server on the instances, as designated in the AMI's Jupyter permissions file.  This password will be visible at the top of the user directory so that users can easily copy and paste it to access their Jupyter instance.</p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../manual/" title="Manual" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Manual
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../changelog/" title="Changelog" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Changelog
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+        
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application.583bbe55.js"></script>
+      
+      <script>app.initialize({version:"1.0",url:{base:".."}})</script>
+      
+    
+    
+      
+        <script>!function(e,a,t,n,o,c,i){e.GoogleAnalyticsObject=o,e.ga=e.ga||function(){(e.ga.q=e.ga.q||[]).push(arguments)},e.ga.l=1*new Date,c=a.createElement(t),i=a.getElementsByTagName(t)[0],c.async=1,c.src="https://www.google-analytics.com/analytics.js",i.parentNode.insertBefore(c,i)}(window,document,"script",0,"ga"),ga("create","UA-115983496-2","compbiocore.github.io"),ga("set","anonymizeIp",!0),ga("send","pageview");var links=document.getElementsByTagName("a");if(Array.prototype.map.call(links,function(e){e.host!=document.location.host&&e.addEventListener("click",function(){var a=e.getAttribute("data-md-action")||"follow";ga("send","event","outbound",a,e.href)})}),document.forms.search){var query=document.forms.search.query;query.addEventListener("blur",function(){if(this.value){var e=document.location.pathname;ga("send","pageview",e+"?q="+this.value)}})}</script>
+      
+    
+  </body>
+</html>
